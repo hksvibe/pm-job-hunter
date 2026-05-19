@@ -1,0 +1,76 @@
+name: Daily PM Job Digest
+
+on:
+  schedule:
+    # 02:30 UTC = 08:00 IST
+    - cron: '30 2 * * *'
+  workflow_dispatch:
+    # lets us run the workflow on-demand from the GitHub UI
+
+permissions:
+  contents: write   # needed to commit the updated jobs_seen.json back
+
+concurrency:
+  group: pm-job-digest
+  cancel-in-progress: false
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          # use the default GITHUB_TOKEN so we can push back to the repo
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: 'pip'
+          cache-dependency-path: github_actions/requirements.txt
+
+      - name: Install dependencies
+        run: pip install -r github_actions/requirements.txt
+
+      - name: Inject résumés from secrets (kept out of the public repo)
+        env:
+          RESUME_APRIL_2026: ${{ secrets.RESUME_APRIL_2026 }}
+          RESUME_DIGITAL_PAYMENTS: ${{ secrets.RESUME_DIGITAL_PAYMENTS }}
+        run: |
+          mkdir -p resumes
+          echo "$RESUME_APRIL_2026" | base64 -d > resumes/april_2026.txt
+          echo "$RESUME_DIGITAL_PAYMENTS" | base64 -d > resumes/digital_payments.txt
+          wc -c resumes/*.txt
+
+      - name: Scrape + filter + dedup + route
+        working-directory: github_actions
+        run: python scrape.py
+
+      - name: Score with Groq Llama 3.3
+        working-directory: github_actions
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python match.py
+
+      - name: Notify Telegram
+        working-directory: github_actions
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python notify.py
+
+      - name: Commit updated dedup state
+        if: always()
+        run: |
+          if [ -n "$(git status --porcelain jobs_seen.json)" ]; then
+            git config user.name  "pm-job-bot"
+            git config user.email "pm-job-bot@users.noreply.github.com"
+            git add jobs_seen.json
+            git commit -m "chore(bot): update jobs_seen.json [skip ci]"
+            git push
+          else
+            echo "no dedup changes to commit"
+          fi

@@ -1,0 +1,37 @@
+{
+  "_meta": {
+    "description": "ATS-board sources for PM jobs. board_type drives normalization in the n8n workflow's 'Normalize jobs' Code node.",
+    "verified_on": "2026-05-19",
+    "verification_command": "curl -s -o /dev/null -w '%{http_code}' https://boards-api.greenhouse.io/v1/boards/<slug>/jobs?content=false  →  expect 200",
+    "how_to_add": "1) find a fintech you like, 2) check careers page footer for 'powered by Greenhouse/Lever/Ashby/Workable', 3) probe the API, 4) append below."
+  },
+  "boards": [
+    { "company": "Careem", "region": "Middle East", "board_type": "greenhouse", "slug": "careem", "fetch_url": "https://boards-api.greenhouse.io/v1/boards/careem/jobs?content=true" },
+    { "company": "Tamara",  "region": "Middle East", "board_type": "greenhouse", "slug": "tamara",  "fetch_url": "https://boards-api.greenhouse.io/v1/boards/tamara/jobs?content=true" },
+    { "company": "PayIt",   "region": "Middle East", "board_type": "greenhouse", "slug": "payit",   "fetch_url": "https://boards-api.greenhouse.io/v1/boards/payit/jobs?content=true" },
+
+    { "company": "Groww",   "region": "India",       "board_type": "greenhouse", "slug": "groww",   "fetch_url": "https://boards-api.greenhouse.io/v1/boards/groww/jobs?content=true" },
+    { "company": "Slice",   "region": "India",       "board_type": "greenhouse", "slug": "slice",   "fetch_url": "https://boards-api.greenhouse.io/v1/boards/slice/jobs?content=true" },
+    { "company": "PhonePe", "region": "India",       "board_type": "greenhouse", "slug": "phonepe", "fetch_url": "https://boards-api.greenhouse.io/v1/boards/phonepe/jobs?content=true" },
+
+    { "company": "CRED",    "region": "India",       "board_type": "lever",      "slug": "cred",    "fetch_url": "https://api.lever.co/v0/postings/cred?mode=json"  },
+    { "company": "Paytm",   "region": "India",       "board_type": "lever",      "slug": "paytm",   "fetch_url": "https://api.lever.co/v0/postings/paytm?mode=json" }
+  ],
+  "candidates_to_verify_periodically": [
+    { "company": "Razorpay",     "hint": "uses workday or jobs.lever.co/razorpay/* — check careers.razorpay.com source HTML for the ATS" },
+    { "company": "Tabby",        "hint": "ME BNPL; check tabby.ai/careers for ATS" },
+    { "company": "Noon",         "hint": "check noon.com/careers source" },
+    { "company": "STC Pay",      "hint": "check stcpay.com.sa/careers" },
+    { "company": "Mashreq",      "hint": "check mashreqbank.com/uae/en/careers" },
+    { "company": "Emirates NBD", "hint": "check emiratesnbd.com/en/careers" },
+    { "company": "Lulu Financial Holdings", "hint": "check lulufinancialholdings.com/careers" },
+    { "company": "Wio Bank",     "hint": "Abu Dhabi; check wio.io/careers" },
+    { "company": "Rain (rain.bh)", "hint": "Bahrain crypto fintech" },
+    { "company": "Jupiter Money","hint": "check jupiter.money/careers" },
+    { "company": "Niyo",         "hint": "goniyo.com/careers" },
+    { "company": "Setu",         "hint": "setu.co/careers" },
+    { "company": "M2P Fintech",  "hint": "m2pfintech.com/careers" },
+    { "company": "Cashfree",     "hint": "cashfree.com/careers" },
+    { "company": "Juspay",       "hint": "juspay.in/careers" }
+  ]
+}

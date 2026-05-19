@@ -1,0 +1,42 @@
+services:
+  n8n:
+    image: n8nio/n8n:latest
+    container_name: pm-job-hunter-n8n
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      # --- Secrets (filled in from .env in the same directory) --------------
+      - GROQ_API_KEY=${GROQ_API_KEY}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+
+      # --- n8n config ------------------------------------------------------
+      - GENERIC_TIMEZONE=Asia/Kolkata
+      - TZ=Asia/Kolkata
+      - N8N_DEFAULT_BINARY_DATA_MODE=filesystem
+      # n8n 2.x ignores N8N_RUNNERS_ENABLED=false anyway, but leave it set for
+      # forward-compat in case the flag becomes effective again.
+      - N8N_RUNNERS_ENABLED=false
+      # Code node needs Node built-ins: fs/path to read /data, https/http to
+      # fetch board APIs (fetch() is stripped by the task-runner sandbox).
+      - NODE_FUNCTION_ALLOW_BUILTIN=fs,path,https,http
+      # Allow HTTP Request nodes to use {{ $env.VARNAME }} expressions so the
+      # Gemini key and Telegram token aren't hard-coded into the workflow JSON.
+      - N8N_BLOCK_ENV_ACCESS_IN_NODE=false
+      # Tells the user-facing URL bar what host to render
+      - N8N_HOST=localhost
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - WEBHOOK_URL=http://localhost:5678/
+
+    volumes:
+      # n8n's own state (encrypted creds, workflow definitions, executions)
+      - n8n_data:/home/node/.n8n
+      # Mount the whole project read-only at /data so the workflow can read
+      # configs and resumes by absolute path. Keeps secrets out of the workflow.
+      - ../config:/data/config:ro
+      - ../resumes:/data/resumes:ro
+
+volumes:
+  n8n_data:

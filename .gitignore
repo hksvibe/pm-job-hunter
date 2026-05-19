@@ -1,0 +1,13 @@
+n8n/.env
+.env
+__pycache__/
+*.pyc
+.DS_Store
+github_actions/_artifacts/
+
+# Résumés contain personal contact info — kept out of the public repo and
+# injected into the GitHub Actions runner at run time via repo secrets
+# (RESUME_APRIL_2026 and RESUME_DIGITAL_PAYMENTS, base64-encoded).
+resumes/*.txt
+
+

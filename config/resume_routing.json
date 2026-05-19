@@ -1,0 +1,29 @@
+{
+  "_meta": {
+    "description": "Picks which resume to score a job against based on title/JD keywords. Falls back to default_resume if no rule matches.",
+    "rule_order": "first match wins; rules evaluated top-down"
+  },
+  "default_resume": "april_2026.txt",
+  "rules": [
+    {
+      "name": "Payments / fintech roles → DigitalPayments resume",
+      "use_resume": "digital_payments.txt",
+      "match_any": [
+        "payment", "payments", "upi", "card", "checkout", "psp", "acquiring",
+        "issuing", "lending", "credit", "bnpl", "neobank", "kyc", "kyb",
+        "merchant", "wallet", "remittance", "settlement", "compliance", "aml",
+        "banking", "bank", "trading", "broker", "wealth", "mutual fund",
+        "insurance", "loan", "emi"
+      ]
+    },
+    {
+      "name": "AI/LLM/GenAI roles → April 2026 (AI-first) resume",
+      "use_resume": "april_2026.txt",
+      "match_any": [
+        "ai ", "a.i.", "artificial intelligence", "machine learning", "ml ",
+        "llm", "genai", "generative", "rag", "conversational", "chatbot",
+        "agent", "agentic", "nlp", "ai/ml"
+      ]
+    }
+  ]
+}

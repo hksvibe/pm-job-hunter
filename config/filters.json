@@ -1,0 +1,75 @@
+{
+  "_meta": {
+    "description": "Filter rules applied AFTER fetch but BEFORE the LLM scoring step. Keep these wide — let the LLM do the nuanced fit judgment.",
+    "match_logic": "A job is kept if (title matches any title_include) AND (location matches any allowed_locations OR remote_keywords) AND (none of title_exclude match)."
+  },
+  "title_include": [
+    "product manager",
+    "senior product manager",
+    "principal product manager",
+    "group product manager",
+    "lead product manager",
+    "staff product manager",
+    "director of product",
+    "director, product",
+    "head of product",
+    "vp product",
+    "vp, product",
+    "vice president product",
+    "ai product manager",
+    "ai pm",
+    "product lead",
+    "product owner"
+  ],
+  "title_exclude": [
+    "intern",
+    "internship",
+    "graduate",
+    "associate product manager",
+    "apm",
+    "marketing manager",
+    "program manager",
+    "project manager"
+  ],
+  "allowed_locations": {
+    "india": [
+      "bengaluru", "bangalore", "blr",
+      "hyderabad", "hyd",
+      "gurgaon", "gurugram",
+      "noida", "delhi", "ncr", "new delhi",
+      "mumbai", "navi mumbai",
+      "pune",
+      "chennai",
+      "india"
+    ],
+    "middle_east": [
+      "dubai", "uae", "united arab emirates", "u.a.e",
+      "abu dhabi",
+      "sharjah",
+      "riyadh", "ksa", "saudi arabia",
+      "jeddah",
+      "dammam",
+      "doha", "qatar",
+      "manama", "bahrain",
+      "kuwait", "kuwait city",
+      "muscat", "oman",
+      "amman", "jordan",
+      "cairo", "egypt",
+      "mena", "middle east"
+    ],
+    "remote_friendly": [
+      "remote",
+      "anywhere",
+      "work from home",
+      "wfh",
+      "fully remote"
+    ]
+  },
+  "remote_exclude_patterns": [
+    "us only", "u.s. only", "usa only", "us-only",
+    "canada only", "canadian residents",
+    "eu only", "europe only", "eea only",
+    "uk only", "united kingdom only"
+  ],
+  "min_llm_score": 7
+}
