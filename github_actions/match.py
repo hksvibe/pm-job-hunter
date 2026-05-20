@@ -75,22 +75,56 @@ def pre_rank(job: dict, kw: list[str]) -> int:
 
 
 # === LLM SCORING =============================================================
-def build_prompt(job: dict) -> tuple[str, str]:
-    system = "You score job fit and return ONLY a JSON object. No prose, no markdown, no code fences."
+RESUME_CHAR_CAP = 5000   # truncate each résumé so two of them fit in the prompt
+JD_CHAR_CAP = 1000       # JD signal is concentrated in the first ~800 chars
+
+
+def _label(filename: str) -> str:
+    """april_2026.txt → 'April 2026'; digital_payments.txt → 'Digital Payments'."""
+    return filename.rsplit(".", 1)[0].replace("_", " ").title()
+
+
+def build_prompt(job: dict, resumes: dict[str, str]) -> tuple[str, str]:
+    system = (
+        "You score job fit. The candidate provides MULTIPLE résumé variants. "
+        "Your job is to pick whichever variant fits THIS job best, score the "
+        "fit against ONLY that chosen variant, and return strict JSON. "
+        "No prose, no markdown, no code fences."
+    )
+
+    # Build a labelled block per résumé so the LLM can refer to them by filename
+    resume_blocks = []
+    for name in sorted(resumes.keys()):
+        text = (resumes[name] or "")[:RESUME_CHAR_CAP]
+        resume_blocks.append(f"=== RÉSUMÉ FILE: {name}  (label: {_label(name)}) ===\n{text}")
+    resumes_section = "\n\n".join(resume_blocks)
+
+    available_filenames = sorted(resumes.keys())
+
     user = (
-        'Scoring rubric (return JSON: {"score": <1-10 integer>, "verdict": "<one short sentence>", "must_have_gaps": ["..."]}):\n'
+        "Return ONLY this JSON object (no prose, no markdown):\n"
+        '{ "score": <1-10 integer>, '
+        f'"chosen_resume": <one of {json.dumps(available_filenames)}>, '
+        '"verdict": "<one short sentence explaining the choice and the score>", '
+        '"must_have_gaps": ["...optional list of missing skills relative to JD..."] }\n\n'
+        "Scoring rubric (apply to the résumé you choose):\n"
         "- 10 = strong match on role (Product Management), seniority, domain, AND location (India / Middle East / India-friendly remote).\n"
-        "- Penalise heavily if the role is non-PM (engineering, marketing, ops, design, data) or seniority is far below the candidate.\n"
+        "- Penalise heavily if the role is non-PM (engineering, marketing, ops, design, data) or if seniority is far below the candidate.\n"
         "- Penalise if location is remote but region-locked outside India/GCC.\n"
-        "- Reward domain overlap (fintech, payments, BFSI, AI/ML, conversational AI, KYC/KYB).\n\n"
-        f"RESUME:\n{job['resume_text']}\n\n"
-        f"JOB:\nTitle: {job['title']}\nCompany: {job['company']}\nLocation: {job['location']}\nJD:\n{(job.get('jd') or '')[:2500]}"
+        "- Reward domain overlap (fintech, payments, BFSI, AI/ML, conversational AI, KYC/KYB).\n"
+        "- Pick the résumé whose domain emphasis fits the job — e.g. payments JD → digital_payments.txt; AI/LLM JD → april_2026.txt.\n\n"
+        f"{resumes_section}\n\n"
+        f"=== JOB ===\n"
+        f"Title: {job['title']}\n"
+        f"Company: {job['company']}\n"
+        f"Location: {job['location']}\n"
+        f"JD:\n{(job.get('jd') or '')[:JD_CHAR_CAP]}"
     )
     return system, user
 
 
-def score_one(job: dict, api_key: str, session: requests.Session) -> tuple[int, str]:
-    system, user = build_prompt(job)
+def score_one(job: dict, resumes: dict[str, str], api_key: str, session: requests.Session) -> dict:
+    system, user = build_prompt(job, resumes)
     body = {
         "model": MODEL,
         "messages": [
@@ -117,7 +151,7 @@ def score_one(job: dict, api_key: str, session: requests.Session) -> tuple[int, 
             r.raise_for_status()
             data = r.json()
             text = data["choices"][0]["message"]["content"]
-            return parse_score(text)
+            return parse_score(text, resumes)
         except requests.HTTPError as e:
             if attempt < MAX_ATTEMPTS - 1:
                 backoff = 2 ** (attempt + 1)
@@ -125,31 +159,53 @@ def score_one(job: dict, api_key: str, session: requests.Session) -> tuple[int, 
                 time.sleep(backoff)
                 continue
             log(f"  scoring failed {job['id']}: {e}")
-            return 0, f"score error: {e}"
+            return {"score": 0, "verdict": f"score error: {e}", "chosen_resume": ""}
         except Exception as e:
             log(f"  scoring failed {job['id']}: {e}")
-            return 0, f"score error: {e}"
-    return 0, "score error: retries exhausted"
+            return {"score": 0, "verdict": f"score error: {e}", "chosen_resume": ""}
+    return {"score": 0, "verdict": "score error: retries exhausted", "chosen_resume": ""}
 
 
-def parse_score(s: str) -> tuple[int, str]:
+def parse_score(s: str, resumes: dict[str, str]) -> dict:
+    available = set(resumes.keys())
+    fallback_resume = next(iter(sorted(available)), "")
+
     if not s:
-        return 0, "empty response"
+        return {"score": 0, "verdict": "empty response", "chosen_resume": fallback_resume}
+
     cleaned = s.strip()
     cleaned = re.sub(r"^```(?:json)?\s*", "", cleaned, flags=re.IGNORECASE)
     cleaned = re.sub(r"\s*```$", "", cleaned)
     start, end = cleaned.find("{"), cleaned.rfind("}")
     if start >= 0 and end > start:
         cleaned = cleaned[start : end + 1]
+
     try:
         obj = json.loads(cleaned)
-        return int(obj.get("score", 0) or 0), str(obj.get("verdict") or "")
+        chosen = str(obj.get("chosen_resume") or "")
+        if chosen not in available:
+            # LLM hallucinated a filename or returned a label — try to match it
+            chosen_l = chosen.lower().replace(" ", "_").replace("-", "_")
+            chosen = next((r for r in available if chosen_l in r.lower() or r.lower().rstrip(".txt") in chosen_l), fallback_resume)
+        return {
+            "score": int(obj.get("score", 0) or 0),
+            "verdict": str(obj.get("verdict") or ""),
+            "chosen_resume": chosen,
+        }
     except Exception:
         m_score = re.search(r'"score"\s*:\s*(\d+(?:\.\d+)?)', s)
         m_verd = re.search(r'"verdict"\s*:\s*"([^"]*)"', s)
+        m_resume = re.search(r'"chosen_resume"\s*:\s*"([^"]*)"', s)
         if m_score:
-            return int(float(m_score.group(1))), m_verd.group(1) if m_verd else ""
-        return 0, f"parse failed; raw[0..120]={s[:120]!r}"
+            chosen = m_resume.group(1) if m_resume else fallback_resume
+            if chosen not in available:
+                chosen = fallback_resume
+            return {
+                "score": int(float(m_score.group(1))),
+                "verdict": m_verd.group(1) if m_verd else "",
+                "chosen_resume": chosen,
+            }
+        return {"score": 0, "verdict": f"parse failed; raw[0..120]={s[:120]!r}", "chosen_resume": fallback_resume}
 
 
 # === MAIN ====================================================================
@@ -157,8 +213,13 @@ def main() -> int:
     api_key = env_required("GROQ_API_KEY")
     scrape = json.loads(read_artifact("scrape_output.json"))
     jobs = scrape.get("jobs") or []
+    resumes = scrape.get("resumes") or {}
     seen = scrape.get("seen") or {}
     filters = load_filters()
+
+    if not resumes:
+        log("FATAL: no résumés in scrape artifact — match.py cannot score without them")
+        return 2
 
     if not jobs:
         log("no jobs to score; passing through empty list")
@@ -180,6 +241,7 @@ def main() -> int:
     log(f"{len(jobs)} candidates → top {len(to_score)} pre-ranked for LLM "
         f"(pre_score range {to_score[-1]['_pre_score']}–{to_score[0]['_pre_score']}); "
         f"{len(dropped)} dropped (will retry tomorrow)")
+    log(f"scoring against {len(resumes)} résumé variant(s): {sorted(resumes.keys())}")
 
     # === LLM scoring with pacing ===
     pace = float(filters.get("llm_pace_seconds", 16))
@@ -188,16 +250,18 @@ def main() -> int:
     scored: list[dict] = []
     log(f"scoring {len(to_score)} jobs against Groq ({MODEL}); pacing {pace}s between calls")
     for i, j in enumerate(to_score, start=1):
-        score, verdict = score_one(j, api_key, session)
-        j_out = {k: v for k, v in j.items() if k not in {"resume_text", "_pre_score"}}
-        j_out["score"] = score
-        j_out["verdict"] = verdict
+        result = score_one(j, resumes, api_key, session)
+        j_out = {k: v for k, v in j.items() if k not in {"_pre_score"}}
+        j_out["score"] = result["score"]
+        j_out["verdict"] = result["verdict"]
+        j_out["chosen_resume"] = result["chosen_resume"]
         scored.append(j_out)
         # Mark as seen ONLY now that we've made a real scoring attempt
         # (a 0/10 from a 429 still counts — we don't want to retry it tomorrow
         # if Groq was the problem; the user can manually re-run if needed).
         seen[j["id"]] = today_iso
-        log(f"  [{i:2d}/{len(to_score)}] {j['company']:14s} {j['title'][:48]:48s} → {score}/10")
+        resume_short = _label(result["chosen_resume"]) if result["chosen_resume"] else "—"
+        log(f"  [{i:2d}/{len(to_score)}] {j['company']:14s} {j['title'][:42]:42s} → {result['score']}/10  [{resume_short}]")
         if i < len(to_score):
             time.sleep(pace)
 

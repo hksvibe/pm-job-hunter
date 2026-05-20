@@ -17,7 +17,7 @@ concurrency:
 jobs:
   run:
     runs-on: ubuntu-latest
-    timeout-minutes: 20  # 30 LLM calls × ~16s pacing = ~8 min, plus scrape/notify overhead
+    timeout-minutes: 25  # 30 LLM calls × ~34s pacing (dual-résumé prompt = bigger tokens) ≈ 17 min, plus scrape/notify overhead
     steps:
       - name: Checkout
         uses: actions/checkout@v4

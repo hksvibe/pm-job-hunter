@@ -13,11 +13,9 @@ import requests
 from common import (
     load_filters,
     load_resumes,
-    load_routing,
     load_seen,
     load_sources,
     log,
-    save_seen,
     write_artifact,
 )
 
@@ -137,18 +135,9 @@ def make_filter(filters: dict):
     return passes_title, passes_location
 
 
-def pick_resume(job: dict, routing: dict) -> str:
-    hay = f"{lower(job['title'])} {lower(job['jd'])}"[:4000]
-    for rule in routing["rules"]:
-        if any(lower(k) in hay for k in rule["match_any"]):
-            return rule["use_resume"]
-    return routing["default_resume"]
-
-
 def main() -> int:
     sources = load_sources()
     filters = load_filters()
-    routing = load_routing()
     resumes = load_resumes()
     seen = load_seen()
     log(f"loaded {len(sources)} boards; {len(resumes)} resumes; {len(seen)} seen ids")
@@ -197,19 +186,26 @@ def main() -> int:
         return 0
 
     for j in after_dedup:
-        j["resume_file"] = pick_resume(j, routing)
-        j["resume_text"] = resumes.get(j["resume_file"]) or resumes.get(routing["default_resume"], "")
         j["_min_score"] = filters.get("min_llm_score", 7)
 
     # NOTE: we deliberately do NOT mark anything as "seen" here. match.py only
     # scores the top-N most relevant jobs and marks just those. Anything that
     # gets dropped by the pre-ranker stays unseen, so it gets a second chance
     # tomorrow if a higher-ranked job is delivered today.
+    #
+    # Résumés are attached at the top level (not per-job) so the artifact stays
+    # small. match.py reads them and sends *all* variants to the LLM, which
+    # picks the best fit per job.
 
     write_artifact(
         "scrape_output.json",
         json.dumps(
-            {"jobs": after_dedup, "board_summary": board_summary, "seen": seen},
+            {
+                "jobs": after_dedup,
+                "resumes": resumes,
+                "board_summary": board_summary,
+                "seen": seen,
+            },
             ensure_ascii=False,
             indent=2,
         ),

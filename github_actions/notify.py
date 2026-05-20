@@ -21,6 +21,13 @@ TG_API = "https://api.telegram.org"
 MAX_MSG = 3500  # Telegram limit is 4096; leave headroom for header / footer / part-tag
 
 
+def _resume_label(filename: str) -> str:
+    """april_2026.txt → 'April 2026'; digital_payments.txt → 'Digital Payments'."""
+    if not filename:
+        return ""
+    return filename.rsplit(".", 1)[0].replace("_", " ").title()
+
+
 def build_messages(scored: list[dict], threshold: int) -> list[str]:
     matches = sorted([j for j in scored if (j.get("score") or 0) >= threshold], key=lambda j: -j["score"])
     if not matches:
@@ -30,9 +37,12 @@ def build_messages(scored: list[dict], threshold: int) -> list[str]:
     blocks: list[str] = []
     for i, j in enumerate(matches[:30], start=1):
         verdict = (j.get("verdict") or "")[:180]
+        resume_label = _resume_label(j.get("chosen_resume"))
         block_lines = [f"{i}. {j['title']} — {j['company']} ({j['location']}) ★ {j['score']}/10"]
         if verdict:
             block_lines.append(f"   {verdict}")
+        if resume_label:
+            block_lines.append(f"   📄 Apply with: {resume_label}")
         block_lines.append(f"   → {j['url']}")
         blocks.append("\n".join(block_lines))
 
