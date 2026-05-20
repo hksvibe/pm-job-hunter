@@ -83,6 +83,29 @@ def normalize(resp: dict) -> list[dict]:
                 "jd": "\n".join(p for p in jd_parts if p),
                 "region": src.get("region"),
             })
+    elif src["board_type"] == "ashby":
+        for j in (data.get("jobs") or []):
+            secondary = j.get("secondaryLocations") or []
+            secondary_strs = []
+            for sl in secondary:
+                if isinstance(sl, dict):
+                    secondary_strs.append(sl.get("location") or sl.get("name") or "")
+                elif isinstance(sl, str):
+                    secondary_strs.append(sl)
+            loc_bits = [j.get("location") or "", j.get("workplaceType") or ""] + secondary_strs
+            if j.get("isRemote"):
+                loc_bits.append("remote")
+            location = " | ".join(b for b in loc_bits if b)
+            jd = j.get("descriptionPlain") or strip(j.get("descriptionHtml"))
+            out.append({
+                "id": f"ab:{src['slug']}:{j.get('id')}",
+                "title": j.get("title") or "",
+                "company": src["company"],
+                "location": location,
+                "url": j.get("jobUrl") or j.get("applyUrl") or "",
+                "jd": jd,
+                "region": src.get("region"),
+            })
     return out
 
 
@@ -137,10 +160,13 @@ def main() -> int:
     for r in responses:
         raw = 0
         if r.get("ok"):
-            if r["src"]["board_type"] == "greenhouse":
+            bt = r["src"]["board_type"]
+            if bt == "greenhouse":
                 raw = len((r["data"] or {}).get("jobs") or [])
-            elif r["src"]["board_type"] == "lever":
+            elif bt == "lever":
                 raw = len(r["data"]) if isinstance(r["data"], list) else 0
+            elif bt == "ashby":
+                raw = len(((r["data"] or {}).get("jobs")) or [])
         board_summary.append({
             "company": r["src"]["company"],
             "ok": r.get("ok"),
@@ -167,19 +193,18 @@ def main() -> int:
         log("warning: jobs found but none passed filter — check filters.json")
     if not after_dedup:
         log("no new jobs to score; exiting cleanly")
-        write_artifact("scrape_output.json", json.dumps({"jobs": [], "board_summary": board_summary}))
+        write_artifact("scrape_output.json", json.dumps({"jobs": [], "board_summary": board_summary, "seen": seen}))
         return 0
 
-    today_iso = date.today().isoformat()
     for j in after_dedup:
         j["resume_file"] = pick_resume(j, routing)
         j["resume_text"] = resumes.get(j["resume_file"]) or resumes.get(routing["default_resume"], "")
         j["_min_score"] = filters.get("min_llm_score", 7)
-        # we record seen here so that even if the rest of the run fails, we
-        # don't keep re-notifying tomorrow about the same listings. notify.py
-        # will skip persisting if delivery fails so the file commit only
-        # happens after the digest is sent.
-        seen[j["id"]] = today_iso
+
+    # NOTE: we deliberately do NOT mark anything as "seen" here. match.py only
+    # scores the top-N most relevant jobs and marks just those. Anything that
+    # gets dropped by the pre-ranker stays unseen, so it gets a second chance
+    # tomorrow if a higher-ranked job is delivered today.
 
     write_artifact(
         "scrape_output.json",

@@ -71,5 +71,15 @@
     "eu only", "europe only", "eea only",
     "uk only", "united kingdom only"
   ],
-  "min_llm_score": 7
+  "min_llm_score": 7,
+  "max_jobs_to_score": 30,
+  "llm_pace_seconds": 16,
+  "_pre_rank_keywords": [
+    "fintech", "payments", "payment", "banking", "lending", "upi", "kyc",
+    "kyb", "bnpl", "merchant", "wallet", "card", "checkout",
+    "ai", "ai/ml", "llm", "genai", "generative", "agent", "agentic",
+    "conversational", "rag", "nlp",
+    "platform", "api", "product", "roadmap", "fintech product",
+    "growth", "0-1", "0 to 1", "go-to-market", "gtm"
+  ]
 }

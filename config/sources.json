@@ -1,37 +1,75 @@
 {
   "_meta": {
-    "description": "ATS-board sources for PM jobs. board_type drives normalization in the n8n workflow's 'Normalize jobs' Code node.",
+    "description": "ATS-board sources for PM jobs. board_type drives normalization in scrape.py / workflow.json. Mark region as 'India' / 'Middle East' / 'Global' (Global = LLM filters by JD location).",
     "verified_on": "2026-05-19",
-    "verification_command": "curl -s -o /dev/null -w '%{http_code}' https://boards-api.greenhouse.io/v1/boards/<slug>/jobs?content=false  →  expect 200",
-    "how_to_add": "1) find a fintech you like, 2) check careers page footer for 'powered by Greenhouse/Lever/Ashby/Workable', 3) probe the API, 4) append below."
+    "verification_command": "Greenhouse: curl -sI https://boards-api.greenhouse.io/v1/boards/<slug>/jobs  →  200\nLever:      curl -sI https://api.lever.co/v0/postings/<slug>?mode=json\nAshby:      curl -sI https://api.ashbyhq.com/posting-api/job-board/<slug>\nWorkable:   curl -sI https://apply.workable.com/api/v3/accounts/<slug>/jobs",
+    "how_to_add": "1) find a company's careers page, 2) inspect the source for the ATS provider, 3) probe the API, 4) append below. /tmp/probe_ats.py is the canonical discovery script."
   },
   "boards": [
-    { "company": "Careem", "region": "Middle East", "board_type": "greenhouse", "slug": "careem", "fetch_url": "https://boards-api.greenhouse.io/v1/boards/careem/jobs?content=true" },
-    { "company": "Tamara",  "region": "Middle East", "board_type": "greenhouse", "slug": "tamara",  "fetch_url": "https://boards-api.greenhouse.io/v1/boards/tamara/jobs?content=true" },
-    { "company": "PayIt",   "region": "Middle East", "board_type": "greenhouse", "slug": "payit",   "fetch_url": "https://boards-api.greenhouse.io/v1/boards/payit/jobs?content=true" },
+    { "company": "Careem",     "region": "Middle East", "board_type": "greenhouse", "slug": "careem",     "fetch_url": "https://boards-api.greenhouse.io/v1/boards/careem/jobs?content=true" },
+    { "company": "Tamara",     "region": "Middle East", "board_type": "greenhouse", "slug": "tamara",     "fetch_url": "https://boards-api.greenhouse.io/v1/boards/tamara/jobs?content=true" },
+    { "company": "PayIt",      "region": "Middle East", "board_type": "greenhouse", "slug": "payit",      "fetch_url": "https://boards-api.greenhouse.io/v1/boards/payit/jobs?content=true" },
+    { "company": "Hala",       "region": "Middle East", "board_type": "greenhouse", "slug": "hala",       "fetch_url": "https://boards-api.greenhouse.io/v1/boards/hala/jobs?content=true" },
+    { "company": "Rain",       "region": "Middle East", "board_type": "ashby",      "slug": "rain",       "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/rain" },
+    { "company": "Lean Technologies", "region": "Middle East", "board_type": "ashby", "slug": "leantech",  "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/leantech" },
 
-    { "company": "Groww",   "region": "India",       "board_type": "greenhouse", "slug": "groww",   "fetch_url": "https://boards-api.greenhouse.io/v1/boards/groww/jobs?content=true" },
-    { "company": "Slice",   "region": "India",       "board_type": "greenhouse", "slug": "slice",   "fetch_url": "https://boards-api.greenhouse.io/v1/boards/slice/jobs?content=true" },
-    { "company": "PhonePe", "region": "India",       "board_type": "greenhouse", "slug": "phonepe", "fetch_url": "https://boards-api.greenhouse.io/v1/boards/phonepe/jobs?content=true" },
+    { "company": "Groww",      "region": "India", "board_type": "greenhouse", "slug": "groww",      "fetch_url": "https://boards-api.greenhouse.io/v1/boards/groww/jobs?content=true" },
+    { "company": "Slice",      "region": "India", "board_type": "greenhouse", "slug": "slice",      "fetch_url": "https://boards-api.greenhouse.io/v1/boards/slice/jobs?content=true" },
+    { "company": "PhonePe",    "region": "India", "board_type": "greenhouse", "slug": "phonepe",    "fetch_url": "https://boards-api.greenhouse.io/v1/boards/phonepe/jobs?content=true" },
+    { "company": "Postman",    "region": "India", "board_type": "greenhouse", "slug": "postman",    "fetch_url": "https://boards-api.greenhouse.io/v1/boards/postman/jobs?content=true" },
+    { "company": "InMobi",     "region": "India", "board_type": "greenhouse", "slug": "inmobi",     "fetch_url": "https://boards-api.greenhouse.io/v1/boards/inmobi/jobs?content=true" },
+    { "company": "Glance",     "region": "India", "board_type": "greenhouse", "slug": "glance",     "fetch_url": "https://boards-api.greenhouse.io/v1/boards/glance/jobs?content=true" },
 
-    { "company": "CRED",    "region": "India",       "board_type": "lever",      "slug": "cred",    "fetch_url": "https://api.lever.co/v0/postings/cred?mode=json"  },
-    { "company": "Paytm",   "region": "India",       "board_type": "lever",      "slug": "paytm",   "fetch_url": "https://api.lever.co/v0/postings/paytm?mode=json" }
+    { "company": "CRED",       "region": "India", "board_type": "lever",      "slug": "cred",       "fetch_url": "https://api.lever.co/v0/postings/cred?mode=json"   },
+    { "company": "Paytm",      "region": "India", "board_type": "lever",      "slug": "paytm",      "fetch_url": "https://api.lever.co/v0/postings/paytm?mode=json"  },
+    { "company": "Meesho",     "region": "India", "board_type": "lever",      "slug": "meesho",     "fetch_url": "https://api.lever.co/v0/postings/meesho?mode=json" },
+    { "company": "Porter",     "region": "India", "board_type": "lever",      "slug": "porter",     "fetch_url": "https://api.lever.co/v0/postings/porter?mode=json" },
+    { "company": "FamPay",     "region": "India", "board_type": "lever",      "slug": "fampay",     "fetch_url": "https://api.lever.co/v0/postings/fampay?mode=json" },
+
+    { "company": "Navi",       "region": "India", "board_type": "ashby",      "slug": "navi",       "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/navi" },
+    { "company": "Leap",       "region": "India", "board_type": "ashby",      "slug": "leap",       "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/leap" },
+    { "company": "Scaler",     "region": "India", "board_type": "ashby",      "slug": "scaler",     "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/scaler" },
+
+    { "company": "Stripe",     "region": "Global", "board_type": "greenhouse", "slug": "stripe",     "fetch_url": "https://boards-api.greenhouse.io/v1/boards/stripe/jobs?content=true" },
+    { "company": "Adyen",      "region": "Global", "board_type": "greenhouse", "slug": "adyen",      "fetch_url": "https://boards-api.greenhouse.io/v1/boards/adyen/jobs?content=true" },
+    { "company": "Databricks", "region": "Global", "board_type": "greenhouse", "slug": "databricks", "fetch_url": "https://boards-api.greenhouse.io/v1/boards/databricks/jobs?content=true" },
+    { "company": "Anthropic",  "region": "Global", "board_type": "greenhouse", "slug": "anthropic",  "fetch_url": "https://boards-api.greenhouse.io/v1/boards/anthropic/jobs?content=true" },
+    { "company": "Airbnb",     "region": "Global", "board_type": "greenhouse", "slug": "airbnb",     "fetch_url": "https://boards-api.greenhouse.io/v1/boards/airbnb/jobs?content=true" },
+    { "company": "Scale AI",   "region": "Global", "board_type": "greenhouse", "slug": "scaleai",    "fetch_url": "https://boards-api.greenhouse.io/v1/boards/scaleai/jobs?content=true" },
+    { "company": "Intercom",   "region": "Global", "board_type": "greenhouse", "slug": "intercom",   "fetch_url": "https://boards-api.greenhouse.io/v1/boards/intercom/jobs?content=true" },
+    { "company": "Figma",      "region": "Global", "board_type": "greenhouse", "slug": "figma",      "fetch_url": "https://boards-api.greenhouse.io/v1/boards/figma/jobs?content=true" },
+    { "company": "Asana",      "region": "Global", "board_type": "greenhouse", "slug": "asana",      "fetch_url": "https://boards-api.greenhouse.io/v1/boards/asana/jobs?content=true" },
+    { "company": "Duolingo",   "region": "Global", "board_type": "greenhouse", "slug": "duolingo",   "fetch_url": "https://boards-api.greenhouse.io/v1/boards/duolingo/jobs?content=true" },
+    { "company": "Vercel",     "region": "Global", "board_type": "greenhouse", "slug": "vercel",     "fetch_url": "https://boards-api.greenhouse.io/v1/boards/vercel/jobs?content=true" },
+    { "company": "Discord",    "region": "Global", "board_type": "greenhouse", "slug": "discord",    "fetch_url": "https://boards-api.greenhouse.io/v1/boards/discord/jobs?content=true" },
+    { "company": "DeepMind",   "region": "Global", "board_type": "greenhouse", "slug": "deepmind",   "fetch_url": "https://boards-api.greenhouse.io/v1/boards/deepmind/jobs?content=true" },
+    { "company": "Instacart",  "region": "Global", "board_type": "greenhouse", "slug": "instacart",  "fetch_url": "https://boards-api.greenhouse.io/v1/boards/instacart/jobs?content=true" },
+
+    { "company": "OpenAI",     "region": "Global", "board_type": "ashby",      "slug": "openai",     "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/openai" },
+    { "company": "Snowflake",  "region": "Global", "board_type": "ashby",      "slug": "snowflake",  "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/snowflake" },
+    { "company": "Notion",     "region": "Global", "board_type": "ashby",      "slug": "notion",     "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/notion" },
+    { "company": "Cohere",     "region": "Global", "board_type": "ashby",      "slug": "cohere",     "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/cohere" },
+    { "company": "Plaid",      "region": "Global", "board_type": "ashby",      "slug": "plaid",      "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/plaid" },
+    { "company": "Perplexity", "region": "Global", "board_type": "ashby",      "slug": "perplexity", "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/perplexity" },
+    { "company": "Supabase",   "region": "Global", "board_type": "ashby",      "slug": "supabase",   "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/supabase" },
+    { "company": "Linear",     "region": "Global", "board_type": "ashby",      "slug": "linear",     "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/linear" }
   ],
   "candidates_to_verify_periodically": [
     { "company": "Razorpay",     "hint": "uses workday or jobs.lever.co/razorpay/* — check careers.razorpay.com source HTML for the ATS" },
-    { "company": "Tabby",        "hint": "ME BNPL; check tabby.ai/careers for ATS" },
-    { "company": "Noon",         "hint": "check noon.com/careers source" },
+    { "company": "Tabby",        "hint": "ME BNPL; check tabby.ai/careers for ATS — likely Workday or custom" },
+    { "company": "Noon",         "hint": "check noon.com/careers source — likely SuccessFactors" },
     { "company": "STC Pay",      "hint": "check stcpay.com.sa/careers" },
     { "company": "Mashreq",      "hint": "check mashreqbank.com/uae/en/careers" },
     { "company": "Emirates NBD", "hint": "check emiratesnbd.com/en/careers" },
-    { "company": "Lulu Financial Holdings", "hint": "check lulufinancialholdings.com/careers" },
     { "company": "Wio Bank",     "hint": "Abu Dhabi; check wio.io/careers" },
-    { "company": "Rain (rain.bh)", "hint": "Bahrain crypto fintech" },
     { "company": "Jupiter Money","hint": "check jupiter.money/careers" },
     { "company": "Niyo",         "hint": "goniyo.com/careers" },
     { "company": "Setu",         "hint": "setu.co/careers" },
     { "company": "M2P Fintech",  "hint": "m2pfintech.com/careers" },
     { "company": "Cashfree",     "hint": "cashfree.com/careers" },
-    { "company": "Juspay",       "hint": "juspay.in/careers" }
+    { "company": "Juspay",       "hint": "juspay.in/careers" },
+    { "company": "Swiggy",       "hint": "swiggy.com/careers — uses SuccessFactors" },
+    { "company": "Zomato",       "hint": "zomato.com/careers — uses Workday" },
+    { "company": "Flipkart",     "hint": "flipkartcareers.com — uses SuccessFactors" }
   ]
 }
