@@ -73,7 +73,7 @@
   ],
   "min_llm_score": 7,
   "max_jobs_to_score": 30,
-  "llm_pace_seconds": 34,
+  "llm_pace_seconds": 26,
   "_pre_rank_keywords": [
     "fintech", "payments", "payment", "banking", "lending", "upi", "kyc",
     "kyb", "bnpl", "merchant", "wallet", "card", "checkout",

@@ -75,8 +75,8 @@ def pre_rank(job: dict, kw: list[str]) -> int:
 
 
 # === LLM SCORING =============================================================
-RESUME_CHAR_CAP = 5000   # truncate each résumé so two of them fit in the prompt
-JD_CHAR_CAP = 1000       # JD signal is concentrated in the first ~800 chars
+RESUME_CHAR_CAP = 3500   # tighter cap so each call ~2350 tokens; 30 jobs/day stays
+JD_CHAR_CAP = 800        # under Groq's 100K-TPD free-tier cap on llama-3.3-70b
 
 
 def _label(filename: str) -> str:
