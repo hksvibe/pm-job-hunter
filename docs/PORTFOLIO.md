@@ -17,25 +17,27 @@ I wanted to compress that to **a single Telegram digest, every morning at 8 AM I
 ## 2. The solution at a glance
 
 ```
-┌──────────┐   ┌──────────────────┐   ┌──────────────┐   ┌─────────────┐   ┌──────────┐
-│  Daily   │ → │ Fetch 8 ATS      │ → │ Score each   │ → │ Filter by   │ → │ Push     │
-│  8 AM    │   │ boards in        │   │ job vs.      │   │ score ≥ 7   │   │ digest   │
-│  cron    │   │ parallel; filter │   │ resume using │   │ + chunk     │   │ to phone │
-│          │   │ + dedup          │   │ Llama-3.3-70B│   │ for limits  │   │          │
-└──────────┘   └──────────────────┘   └──────────────┘   └─────────────┘   └──────────┘
+┌──────────┐   ┌──────────────────┐   ┌────────────┐   ┌──────────────┐   ┌─────────────┐   ┌──────────┐
+│  Daily   │ → │ Fetch 42 ATS     │ → │ Pre-rank   │ → │ LLM-score    │ → │ Threshold   │ → │ Push     │
+│  8 AM    │   │ boards (GH+Lever │   │ by keyword │   │ top 30 vs.   │   │ ≥ 7 +       │   │ digest   │
+│  cron    │   │ + Ashby) in      │   │ heuristic; │   │ resume using │   │ chunked     │   │ to phone │
+│          │   │ parallel; filter │   │ cap at N   │   │ Llama-3.3-70B│   │ messages    │   │          │
+│          │   │ + dedup          │   │            │   │              │   │             │   │          │
+└──────────┘   └──────────────────┘   └────────────┘   └──────────────┘   └─────────────┘   └──────────┘
 ```
 
-- **Sources:** Greenhouse + Lever ATS endpoints for Indian and Middle East fintechs (Careem, Tamara, PayIt, PhonePe, Groww, Slice, CRED, Paytm — extensible via a JSON config).
-- **Scoring:** Each job is paired with the most relevant résumé variant (AI-first or Digital Payments) and sent to **Groq's Llama-3.3-70B-Versatile** with a structured prompt. The model returns JSON `{score: 1–10, verdict, must_have_gaps}`.
+- **Sources:** 42 ATS endpoints across **Greenhouse, Lever, and Ashby** — Indian fintechs (PhonePe, Paytm, CRED, Slice, Groww, Meesho, FamPay, InMobi, Glance, Postman, Navi, Leap, …), Middle East fintechs (Careem, Tamara, PayIt, Hala, Rain, Lean Technologies), and global PM-heavy companies (Stripe, Adyen, Anthropic, OpenAI, Snowflake, Databricks, Figma, Notion, Cohere, Plaid, Scale AI, …). Extensible via [`config/sources.json`](../config/sources.json) — adding a new board takes one curl probe and one JSON entry.
+- **Pre-rank:** ~5,500 raw jobs → ~95 PM-titled jobs in target geographies. A cheap keyword heuristic (title quality + seniority + fintech/AI domain overlap + India/ME geo bonus) ranks them; only the top 30 are sent to the LLM. Knobs (`max_jobs_to_score`, `llm_pace_seconds`, keyword list) live in [`config/filters.json`](../config/filters.json).
+- **Scoring:** Each surviving job is paired with the most relevant résumé variant (AI-first or Digital Payments) and sent to **Groq's Llama-3.3-70B-Versatile** with a structured prompt. The model returns JSON `{score: 1–10, verdict, must_have_gaps}`. Calls are paced at 16s to stay under Groq's free-tier ~6,000-token-per-minute input cap, with exponential backoff on the rare 429.
 - **Delivery:** Jobs with `score ≥ 7` are formatted into a digest and pushed via the Telegram Bot API. Long digests are auto-chunked under the 4,096-character message limit.
-- **Dedup:** Each job's stable ID is recorded after delivery; tomorrow's run skips anything already sent.
+- **Dedup:** Each scored job's stable ID is recorded after successful delivery; tomorrow's run skips anything already sent. Jobs dropped by the pre-ranker stay unseen so they're re-considered the next day.
 
 ## 3. Architecture & tech stack
 
 | Layer | Tool | Why it was chosen | Cost |
 |---|---|---|---|
 | **Orchestrator** | n8n 2.20 (self-hosted via Docker) | Visual workflow editor with full Node.js access in Code nodes; runs locally; persistent volume keeps state across restarts | ₹0 (open-source) |
-| **Job sources** | Greenhouse + Lever public ATS APIs | Official JSON endpoints, no scraping, no rate-limiting, no auth required | ₹0 |
+| **Job sources** | Greenhouse + Lever + Ashby public ATS APIs (42 boards) | Official JSON endpoints, no scraping, no rate-limiting, no auth required. Discovery script (`probe_ats.py`) probes ~180 candidate slugs in parallel to find new boards. | ₹0 |
 | **LLM scoring** | **Groq Llama-3.3-70B-Versatile** | Fast (~500 ms/call), generous free tier (~30 req/min, 14,400 req/day), OpenAI-compatible API | ₹0 (free tier) |
 | **Delivery** | **Telegram Bot API** via `@BotFather` | Free, instant, reliable, official API, no flakiness; push notification on phone | ₹0 |
 | **Container runtime** | Docker Desktop (macOS) | Standard, low-overhead local hosting | ₹0 |
@@ -47,11 +49,11 @@ I wanted to compress that to **a single Telegram digest, every morning at 8 AM I
 
 | Resource | Free-tier limit | Actual daily usage | Headroom |
 |---|---|---|---|
-| n8n self-hosted | unlimited | 1 scheduled run | ∞ |
-| Groq API calls | 14,400/day | ~5–15 calls | 1,000× |
+| GitHub Actions (public repo) | unlimited | ~9 min/day | ∞ |
+| n8n self-hosted (local) | unlimited | 1 scheduled run | ∞ |
+| Groq API calls (Llama-3.3-70B) | 14,400 req/day, 6,000 tokens/min | up to 30 scored calls/day | 480× on req/day |
 | Telegram messages | unlimited (personal use) | 0–3 messages | ∞ |
-| Greenhouse / Lever JSON | unlimited | ~8 requests | ∞ |
-| Docker compute | local | ~10 sec/day of CPU | ∞ |
+| ATS JSON endpoints | unlimited | 42 parallel requests, daily | ∞ |
 | **Total** | — | — | **₹0/month indefinitely** |
 
 ## 4. Configuration model
@@ -164,17 +166,23 @@ The n8n workflow is **7 nodes** wired linearly:
     ▼
 [Fetch + normalize + filter + dedup + route]   ← all in one Code node
     │ • Reads config + résumés from /data volume
-    │ • Fetches 8 ATS boards in parallel (Promise.all + Node https module)
-    │ • Normalizes Greenhouse / Lever shapes into a common job schema
+    │ • Fetches 42 ATS boards in parallel (Promise.all + Node https module)
+    │ • Normalizes Greenhouse / Lever / Ashby shapes into a common job schema
     │ • Title and location filters
     │ • Dedups against persistent workflow state
     │ • Routes each job to the most relevant résumé
     │
     ▼
-[Build LLM prompts]   ← one prompt per job in OpenAI-compatible body shape
+[Pre-rank + cap to top N]
+    │ • Cheap keyword scoring: title quality, seniority, domain overlap, geo
+    │ • Sorts descending; keeps top 30 (configurable in filters.json)
+    │ • Drops the rest — they'll be re-considered tomorrow
     │
     ▼
-[Score (Groq Llama 3.3)]   ← HTTP POST per job; ~500 ms each, parallelisable
+[Build LLM prompts]   ← one prompt per surviving job
+    │
+    ▼
+[Score (Groq Llama 3.3)]   ← serial HTTP POSTs; 16s pacing under TPM cap
     │
     ▼
 [Score → filter → format]
@@ -197,9 +205,11 @@ These weren't in the original plan but emerged from production debugging:
 
 - **Tolerant LLM parser:** strips ```` ```json ```` code fences, falls back to regex on `JSON.parse` failure, and embeds the raw response in the digest verdict line so misformatted answers are visible without checking logs.
 - **Two-tier zero-handling:** if zero jobs pass *filter*, the Code node throws with full diagnostics (which boards succeeded, what counts, etc.) so a broken source is loudly visible. If zero jobs pass *after dedup* (normal day where nothing new was posted), the workflow silently no-ops — no spam, no false alarms.
-- **Message chunking:** the Telegram API caps individual messages at 4,096 characters. A 15-job digest can easily exceed that. The formatter packs job blocks into chunks of ≤3,500 chars, emits one message per chunk, and labels them "part 1/N" so they read in order.
+- **Message chunking:** the Telegram API caps individual messages at 4,096 characters. A 30-job digest easily exceeds that. The formatter packs job blocks into chunks of ≤3,500 chars, emits one message per chunk, and labels them "part 1/N" so they read in order.
 - **Per-job verdict cap:** each verdict line is capped at 180 chars so a single chatty LLM response can't break message budgeting for the rest of the digest.
 - **Resilient HTTP transport:** Node.js built-in `https` module wrapped in a `Promise.all`, with timeouts, redirect-following, and per-board error capture. One failing board doesn't take down the run.
+- **Pre-ranker as rate-limit defense:** the keyword pre-ranker isn't just optimization — it's the only thing that makes the pipeline viable on Groq's free tier. Without it, scoring ~95 PM jobs/day at ~1,500 input tokens/call would saturate the 6,000-tokens-per-minute cap. With it, the LLM only sees the top 30, and the 16-second pacing comfortably stays under all per-minute limits with zero 429s in production.
+- **Dedup respects scoring success:** marking a job as "seen" only happens after the LLM has actually scored it. Jobs the pre-ranker drops stay unseen so they get re-evaluated tomorrow if today's higher-ranked jobs are delivered. This means the pre-ranker reduces *cost* without reducing *coverage* — every PM job in target geography eventually gets its turn at the LLM.
 
 ## 8. Engineering decisions worth highlighting
 
@@ -213,28 +223,50 @@ A few non-obvious calls that shaped the final design:
 | **In-process Code node (no microservices)** | The whole pipeline fits in one Docker container running n8n. No FastAPI, no queue, no DB. Lower complexity, lower latency, fewer failure modes. |
 | **Configs and résumés mounted read-only from host** | Workflow JSON contains no secrets and no résumé content. Configs can be edited in your favorite editor without touching n8n's UI. |
 | **Groq over Gemini** | Gemini's free tier was unreliable (model retirement + project-level `limit:0` errors). Groq's free tier is generous, fast, and uses the OpenAI-compatible API that most LLM clients already speak. |
+| **Cheap pre-ranker over more LLM calls** | Could have just paid for higher Groq throughput or sharded calls across multiple API keys. Instead a 30-line keyword pre-ranker filters ~95 → ~30 most-likely-relevant jobs, keeping the pipeline ₹0/month and the daily digest's LLM time bounded. Picks are visible in `match_output.json` artifact for tuning. |
+| **Discovery via probe script, not curation** | Rather than hand-curate companies, `probe_ats.py` parallel-probes ~180 candidate slugs across 4 ATS providers and prints which respond. Adding a new geography (Latin America? Europe?) is a config change, not a code change. |
 
 ## 9. Repository layout
 
+The repo carries **both orchestrations** side-by-side, sharing configs and résumé state. Pick the one that fits your deployment model.
+
 ```
 PM Job Scrapper/
-├── README.md                    ← setup walkthrough (for re-deploying)
+├── README.md                       ← setup walkthrough (for re-deploying)
 ├── docs/
-│   └── PORTFOLIO.md             ← this document
-├── n8n/
-│   ├── workflow.json            ← the 7-node pipeline (import into n8n)
-│   ├── docker-compose.yml       ← container config with env mounts
-│   └── .env.example             ← API key template
-├── config/
-│   ├── sources.json             ← ATS boards
-│   ├── filters.json             ← title / location / score rules
-│   └── resume_routing.json      ← résumé→job-type mapping
-├── resumes/
-│   ├── april_2026.txt           ← AI-first résumé (default)
-│   └── digital_payments.txt     ← fintech-tailored résumé
+│   └── PORTFOLIO.md                ← this document
+│
+├── n8n/                            ← Orchestration A: laptop-hosted (Docker)
+│   ├── workflow.json               ← the 7-node n8n pipeline
+│   ├── docker-compose.yml          ← container config with env mounts
+│   └── .env.example                ← local secrets template
+│
+├── github_actions/                 ← Orchestration B: cloud-hosted (Actions)
+│   ├── README.md
+│   ├── requirements.txt            ← single dep: requests
+│   ├── common.py                   ← config/artifact helpers
+│   ├── scrape.py                   ← stage 1: fetch + filter + dedup
+│   ├── match.py                    ← stage 2: pre-rank + LLM score
+│   └── notify.py                   ← stage 3: format + chunk + send Telegram
+│
+├── .github/workflows/
+│   └── daily.yml                   ← cron at 02:30 UTC = 8 AM IST
+│
+├── config/                         ← shared by both orchestrations
+│   ├── sources.json                ← 42 ATS boards (GH + Lever + Ashby)
+│   ├── filters.json                ← titles / locations / threshold / pacing
+│   └── resume_routing.json         ← résumé→job-type mapping
+│
+├── resumes/                        ← gitignored; injected via repo secrets in CI
+│   ├── april_2026.txt              ← AI-first résumé (default)
+│   └── digital_payments.txt        ← fintech-tailored résumé
+│
 ├── scripts/
-│   └── parse_resume.py          ← one-shot PDF → text converter
-└── .gitignore                   ← keeps .env and secrets out of version control
+│   ├── parse_resume.py             ← one-shot PDF → text converter
+│   └── probe_ats.py                ← discovery: probe many slugs to find live ATS boards
+│
+├── jobs_seen.json                  ← dedup state — committed back by the cron each run
+└── .gitignore
 ```
 
 ## 10. Sample output
@@ -265,16 +297,20 @@ Sent by your job bot 🤖
 A few things I didn't expect going in:
 
 - **LLM-as-a-filter beats keyword filtering** at the long-tail. A keyword filter catches "Product Manager" titles, but it can't tell apart a marketing-PM-with-product-in-the-title from a real product role. The LLM verdict line surfaces *why* a 4/10 score is a 4, which makes filter tuning much easier than reading raw JDs.
+- **But cheap keyword pre-ranking beats LLM at scale.** Once the source list grew from 8 to 42 boards, the LLM was the bottleneck (free-tier TPM caps). A 30-line keyword scorer that runs in microseconds picks the top 30 candidates, and the LLM only refines the close calls. Same digest quality, 3× the source coverage, ₹0 still.
 - **n8n is great as a prototyping layer, less so as a production target.** The visual canvas accelerates the first 80% of the build. The last 20% (sandbox quirks, env-var gating, env-specific globals like `fetch`, message-chunking edge cases) ended up being trial-and-error.
 - **Free tiers degrade silently.** Gemini 1.5 Flash silently got retired from `v1beta`. Gemini 2.0 Flash arrived but with `limit:0` for new projects. The swap to Groq took 20 minutes once I realized "free" doesn't mean "stable."
-- **Dedup state belongs at the end, not the middle.** My first dedup-too-early bug marked jobs as "seen" before they were delivered — meaning every n8n test run poisoned the seen list. Moving the dedup mark to after successful send (or treating dedup-zero as a silent no-op instead of an error) eliminated the recurring "why is my workflow throwing today?" issue.
+- **Dedup state belongs at the end, not the middle.** My first dedup-too-early bug marked jobs as "seen" before they were delivered — meaning every test run poisoned the seen list. Moving the dedup mark to *after* successful LLM scoring (or *after* successful Telegram delivery for the cloud version) eliminated the recurring "why is my workflow throwing today?" issue. The pre-ranker's "drop ≠ seen" rule is the same idea: only mark seen what you actually processed.
+- **Discovery is leverage.** Hand-curating "20 fintechs I care about" takes an hour. Writing a 50-line probe script that hits ~180 slugs across 4 ATS providers and reports which are live takes the same hour, but now adding 50 more companies to evaluate is a one-line list edit. The probe script is committed as a tool, not as throwaway code.
 
 ## 12. What's next
 
-- **Orchestration B** — port the same configs and pipeline logic to GitHub Actions + Python so the system runs in the cloud, not on my laptop. Doubles as a portfolio repo.
-- **Expand Middle East coverage** — Tabby, Noon, STC Pay, Mashreq, Wio Bank don't expose Greenhouse/Lever endpoints. Need to discover their actual ATS slugs (Workday, SAP SuccessFactors, custom) and add normalizers.
-- **LinkedIn fallback** — guest-view scraping for boards not on a standard ATS. Lower priority since ATS coverage already captures ~80% of relevant openings.
-- **Weekly digest mode** — opt-in summary email on Sunday with the week's full backlog, in case a daily digest got missed.
+- ✅ ~~Orchestration B — port to GitHub Actions + Python.~~ (Done — live in [`github_actions/`](../github_actions) running daily.)
+- ✅ ~~Expand Middle East coverage.~~ (Hala, Rain, Lean Technologies added on Ashby; Careem/Tamara/PayIt already on Greenhouse. Still to discover: Tabby, Noon, STC Pay, Wio Bank — all on non-standard ATS systems.)
+- **More ATS providers** — SmartRecruiters, Workday, SuccessFactors normalizers would unlock another wave of large enterprise hirers (Razorpay, Swiggy, Zomato, Flipkart, the GCC banks).
+- **LinkedIn fallback** — guest-view scraping for boards not on a standard ATS. Lower priority since ATS coverage already captures most of what's worth seeing.
+- **Weekly recap mode** — Sunday email with the week's top-scoring jobs even if they were already in daily digests, as a re-surface for ones I didn't action.
+- **Calibration loop** — after a few weeks of digests, look at which jobs I actually applied to vs. which I skipped despite high scores. Feed that back as few-shot examples in the scoring prompt to drive the rubric toward what I actually find interesting.
 
 ---
 
