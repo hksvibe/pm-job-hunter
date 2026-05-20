@@ -3,7 +3,7 @@
 Run once when a resume changes:
     python3 scripts/parse_resume.py \
         "/path/to/HarshKumarSharma_April 2026.pdf" \
-        resumes/april_2026.txt
+        resumes/ai_first.txt
 """
 from __future__ import annotations
 

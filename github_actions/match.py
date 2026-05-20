@@ -79,9 +79,22 @@ RESUME_CHAR_CAP = 3500   # tighter cap so each call ~2350 tokens; 30 jobs/day st
 JD_CHAR_CAP = 800        # under Groq's 100K-TPD free-tier cap on llama-3.3-70b
 
 
+_ACRONYMS = {"Ai": "AI", "Pm": "PM", "Bfsi": "BFSI", "Ml": "ML", "Gtm": "GTM"}
+
+
 def _label(filename: str) -> str:
-    """april_2026.txt → 'April 2026'; digital_payments.txt → 'Digital Payments'."""
-    return filename.rsplit(".", 1)[0].replace("_", " ").title()
+    """ai_first.txt → 'AI First'; digital_payments.txt → 'Digital Payments'."""
+    base = filename.rsplit(".", 1)[0]
+    titled = base.replace("_", " ").replace("-", " ").title()
+    for wrong, right in _ACRONYMS.items():
+        titled = titled.replace(f" {wrong} ", f" {right} ")
+        if titled.startswith(f"{wrong} "):
+            titled = right + titled[len(wrong):]
+        if titled.endswith(f" {wrong}"):
+            titled = titled[:-len(wrong)] + right
+        if titled == wrong:
+            titled = right
+    return titled
 
 
 def build_prompt(job: dict, resumes: dict[str, str]) -> tuple[str, str]:
@@ -112,7 +125,7 @@ def build_prompt(job: dict, resumes: dict[str, str]) -> tuple[str, str]:
         "- Penalise heavily if the role is non-PM (engineering, marketing, ops, design, data) or if seniority is far below the candidate.\n"
         "- Penalise if location is remote but region-locked outside India/GCC.\n"
         "- Reward domain overlap (fintech, payments, BFSI, AI/ML, conversational AI, KYC/KYB).\n"
-        "- Pick the résumé whose domain emphasis fits the job — e.g. payments JD → digital_payments.txt; AI/LLM JD → april_2026.txt.\n\n"
+        "- Pick the résumé whose domain emphasis fits the job — e.g. payments JD → digital_payments.txt; AI/LLM JD → ai_first.txt.\n\n"
         f"{resumes_section}\n\n"
         f"=== JOB ===\n"
         f"Title: {job['title']}\n"

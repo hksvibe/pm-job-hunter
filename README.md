@@ -24,7 +24,7 @@ PM Job Scrapper/
 │   ├── docker-compose.yml    ← runs n8n locally with the right mounts
 │   └── .env.example          ← copy → .env, fill in API keys
 ├── resumes/
-│   ├── april_2026.txt        ← AI-first resume (default)
+│   ├── ai_first.txt          ← AI-first resume (default)
 │   └── digital_payments.txt  ← fintech/payments tailored
 ├── config/
 │   ├── sources.json          ← ATS boards to fetch from
@@ -133,7 +133,7 @@ docker compose logs -f n8n  # tail logs
 1. Drop the new PDF into `resumes/` (or anywhere) and re-parse:
    ```bash
    cd "/Users/harshmacminim4/PM Job Scrapper"
-   python3 scripts/parse_resume.py /path/to/new.pdf resumes/april_2026.txt
+   python3 scripts/parse_resume.py /path/to/new.pdf resumes/ai_first.txt
    ```
 2. No restart needed — the workflow re-reads the file on every run.
 

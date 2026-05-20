@@ -37,11 +37,11 @@ jobs:
 
       - name: Inject résumés from secrets (kept out of the public repo)
         env:
-          RESUME_APRIL_2026: ${{ secrets.RESUME_APRIL_2026 }}
+          RESUME_AI_FIRST: ${{ secrets.RESUME_AI_FIRST }}
           RESUME_DIGITAL_PAYMENTS: ${{ secrets.RESUME_DIGITAL_PAYMENTS }}
         run: |
           mkdir -p resumes
-          echo "$RESUME_APRIL_2026" | base64 -d > resumes/april_2026.txt
+          echo "$RESUME_AI_FIRST" | base64 -d > resumes/ai_first.txt
           echo "$RESUME_DIGITAL_PAYMENTS" | base64 -d > resumes/digital_payments.txt
           wc -c resumes/*.txt
 

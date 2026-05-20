@@ -96,7 +96,7 @@ Adding a new board takes one curl probe and one JSON entry.
 
 ```json
 {
-  "default_resume": "april_2026.txt",
+  "default_resume": "ai_first.txt",
   "rules": [
     {
       "name": "Payments / fintech → DigitalPayments resume",
@@ -105,7 +105,7 @@ Adding a new board takes one curl probe and one JSON entry.
     },
     {
       "name": "AI/LLM/GenAI → April 2026 (AI-first) resume",
-      "use_resume": "april_2026.txt",
+      "use_resume": "ai_first.txt",
       "match_any": ["ai ", "llm", "genai", "rag", "conversational", "agent", ...]
     }
   ]
@@ -119,7 +119,7 @@ First-match-wins routing means an "AI Product Manager — Payments" job at a fin
 Two résumé variants kept in `resumes/`, parsed once from PDF via a one-line script:
 
 ```bash
-python3 scripts/parse_resume.py /path/to/new.pdf resumes/april_2026.txt
+python3 scripts/parse_resume.py /path/to/new.pdf resumes/ai_first.txt
 ```
 
 ## 5. The LLM scoring prompt
@@ -258,7 +258,7 @@ PM Job Scrapper/
 │   └── resume_routing.json         ← résumé→job-type mapping
 │
 ├── resumes/                        ← gitignored; injected via repo secrets in CI
-│   ├── april_2026.txt              ← AI-first résumé (default)
+│   ├── ai_first.txt                ← AI-first résumé (default)
 │   └── digital_payments.txt        ← fintech-tailored résumé
 │
 ├── scripts/

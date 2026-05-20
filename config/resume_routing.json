@@ -3,10 +3,11 @@
     "description": "Picks which resume to score a job against based on title/JD keywords. Falls back to default_resume if no rule matches.",
     "rule_order": "first match wins; rules evaluated top-down"
   },
-  "default_resume": "april_2026.txt",
+  "_meta": "Routing rules are advisory only as of the dual-résumé match.py — match.py sends BOTH résumés to the LLM and lets it pick. These rules are kept as a fallback / for documentation / for any future single-résumé-per-job mode.",
+  "default_resume": "ai_first.txt",
   "rules": [
     {
-      "name": "Payments / fintech roles → DigitalPayments resume",
+      "name": "Payments / fintech roles → Digital Payments résumé",
       "use_resume": "digital_payments.txt",
       "match_any": [
         "payment", "payments", "upi", "card", "checkout", "psp", "acquiring",
@@ -17,8 +18,8 @@
       ]
     },
     {
-      "name": "AI/LLM/GenAI roles → April 2026 (AI-first) resume",
-      "use_resume": "april_2026.txt",
+      "name": "AI / LLM / GenAI roles → AI-first résumé",
+      "use_resume": "ai_first.txt",
       "match_any": [
         "ai ", "a.i.", "artificial intelligence", "machine learning", "ml ",
         "llm", "genai", "generative", "rag", "conversational", "chatbot",

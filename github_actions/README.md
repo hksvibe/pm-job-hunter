@@ -28,12 +28,12 @@ The workflow needs five secrets under **Settings → Secrets and variables → A
 | `GROQ_API_KEY` | https://console.groq.com/keys → Create API Key |
 | `TELEGRAM_BOT_TOKEN` | @BotFather on Telegram → `/newbot` |
 | `TELEGRAM_CHAT_ID` | Send any message to your bot → fetch `https://api.telegram.org/bot<TOKEN>/getUpdates` → use `chat.id` |
-| `RESUME_APRIL_2026` | Base64-encoded contents of `resumes/april_2026.txt` (kept out of the public repo). Set with: `gh secret set RESUME_APRIL_2026 --body "$(base64 < resumes/april_2026.txt)"` |
+| `RESUME_AI_FIRST` | Base64-encoded contents of `resumes/ai_first.txt` (kept out of the public repo). Set with: `gh secret set RESUME_AI_FIRST --body "$(base64 < resumes/ai_first.txt)"` |
 | `RESUME_DIGITAL_PAYMENTS` | Base64-encoded contents of `resumes/digital_payments.txt`. Set with: `gh secret set RESUME_DIGITAL_PAYMENTS --body "$(base64 < resumes/digital_payments.txt)"` |
 
 The first three match the names used in `.env` for Orchestration A. The two résumé secrets are unique to Orchestration B — they exist so the public repo never contains your contact info (résumés are gitignored). The workflow decodes them into `resumes/*.txt` at the start of every run.
 
-To rotate a résumé later: re-run `python3 scripts/parse_resume.py /path/new.pdf resumes/april_2026.txt` and then `gh secret set RESUME_APRIL_2026 --body "$(base64 < resumes/april_2026.txt)"`.
+To rotate a résumé later: re-run `python3 scripts/parse_resume.py /path/new.pdf resumes/ai_first.txt` and then `gh secret set RESUME_AI_FIRST --body "$(base64 < resumes/ai_first.txt)"`.
 
 ## File layout
 

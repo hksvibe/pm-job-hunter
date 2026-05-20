@@ -21,11 +21,24 @@ TG_API = "https://api.telegram.org"
 MAX_MSG = 3500  # Telegram limit is 4096; leave headroom for header / footer / part-tag
 
 
+_ACRONYMS = {"Ai": "AI", "Pm": "PM", "Bfsi": "BFSI", "Ml": "ML", "Gtm": "GTM"}
+
+
 def _resume_label(filename: str) -> str:
-    """april_2026.txt → 'April 2026'; digital_payments.txt → 'Digital Payments'."""
+    """ai_first.txt → 'AI First'; digital_payments.txt → 'Digital Payments'."""
     if not filename:
         return ""
-    return filename.rsplit(".", 1)[0].replace("_", " ").title()
+    base = filename.rsplit(".", 1)[0]
+    titled = base.replace("_", " ").replace("-", " ").title()
+    for wrong, right in _ACRONYMS.items():
+        titled = titled.replace(f" {wrong} ", f" {right} ")
+        if titled.startswith(f"{wrong} "):
+            titled = right + titled[len(wrong):]
+        if titled.endswith(f" {wrong}"):
+            titled = titled[:-len(wrong)] + right
+        if titled == wrong:
+            titled = right
+    return titled
 
 
 def build_messages(scored: list[dict], threshold: int) -> list[str]:
