@@ -1,9 +1,5 @@
 {
-  "_meta": {
-    "description": "Picks which resume to score a job against based on title/JD keywords. Falls back to default_resume if no rule matches.",
-    "rule_order": "first match wins; rules evaluated top-down"
-  },
-  "_meta": "Routing rules are advisory only as of the dual-résumé match.py — match.py sends BOTH résumés to the LLM and lets it pick. These rules are kept as a fallback / for documentation / for any future single-résumé-per-job mode.",
+  "_meta": "Advisory only as of the dual-résumé match.py — match.py sends BOTH résumés to the LLM and lets it pick. These rules are kept as a fallback / for documentation / for any future single-résumé-per-job mode. rule_order: first match wins; rules evaluated top-down.",
   "default_resume": "ai_first.txt",
   "rules": [
     {

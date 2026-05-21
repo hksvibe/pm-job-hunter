@@ -111,12 +111,12 @@ def normalize(resp: dict) -> list[dict]:
 def make_filter(filters: dict):
     ti = [t.lower() for t in filters["title_include"]]
     tx = [t.lower() for t in filters["title_exclude"]]
-    allowed = (
-        [l.lower() for l in filters["allowed_locations"]["india"]]
-        + [l.lower() for l in filters["allowed_locations"]["middle_east"]]
-        + [l.lower() for l in filters["allowed_locations"]["remote_friendly"]]
-    )
+    india_locs = [l.lower() for l in filters["allowed_locations"]["india"]]
+    me_locs = [l.lower() for l in filters["allowed_locations"]["middle_east"]]
+    remote_locs = [l.lower() for l in filters["allowed_locations"]["remote_friendly"]]
+    target_locs = india_locs + me_locs
     rx_remote_exclude = [p.lower() for p in filters["remote_exclude_patterns"]]
+    location_exclude = [l.lower() for l in filters.get("location_exclude", [])]
 
     def passes_title(t: str) -> bool:
         lt = lower(t)
@@ -125,13 +125,35 @@ def make_filter(filters: dict):
         return any(x in lt for x in ti)
 
     def passes_location(loc: str, jd: str) -> bool:
-        hay = f"{lower(loc)} || {lower(jd)[:400]}"
-        if not any(x in hay for x in allowed):
+        # Pad with spaces so tokens like " usa" or " uk " can match at word
+        # boundaries without false positives on "australia" containing "us".
+        lloc = f" {lower(loc)} "
+        ljd  = f" {lower(jd)[:600]} "
+
+        # 1) HARD REJECT — any explicitly excluded region in the location text.
+        #    We only check `lloc`, not the JD, because a US-headquartered
+        #    company often mentions "San Francisco" in their company-summary
+        #    boilerplate even when hiring elsewhere.
+        if any(x in lloc for x in location_exclude):
             return False
-        if "remote" in lower(loc):
-            if any(p in lower(jd) for p in rx_remote_exclude):
+
+        # 2) Direct accept — location explicitly names an India or ME locale.
+        if any(x in lloc for x in target_locs):
+            return True
+
+        # 3) Remote — accept only if the JD itself mentions India/ME (i.e. the
+        #    role is genuinely open to candidates there) AND no remote-region-
+        #    lock pattern is in the JD.
+        if any(x in lloc for x in remote_locs):
+            if any(p in ljd for p in rx_remote_exclude):
                 return False
-        return True
+            if any(x in ljd for x in target_locs):
+                return True
+            # "remote" with no India/ME signal in JD — probably US-default remote.
+            return False
+
+        # 4) Nothing matched — reject.
+        return False
 
     return passes_title, passes_location
 
