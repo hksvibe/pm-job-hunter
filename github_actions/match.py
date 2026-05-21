@@ -136,6 +136,12 @@ def build_prompt(job: dict, resumes: dict[str, str]) -> tuple[str, str]:
     return system, user
 
 
+TPD_BAIL_THRESHOLD_SECONDS = 60  # if Groq's retry-after exceeds this we're in
+                                  # TPD/RPD-limit territory, not TPM-burst; bail
+                                  # so we can persist what's scored so far instead
+                                  # of timing out waiting 18 min on a single call.
+
+
 def score_one(job: dict, resumes: dict[str, str], api_key: str, session: requests.Session) -> dict:
     system, user = build_prompt(job, resumes)
     body = {
@@ -156,6 +162,11 @@ def score_one(job: dict, resumes: dict[str, str], api_key: str, session: request
             r = session.post(GROQ_URL, headers=headers, json=body, timeout=60)
             if r.status_code == 429:
                 wait = float(r.headers.get("retry-after", "5"))
+                if wait > TPD_BAIL_THRESHOLD_SECONDS:
+                    # Daily/rolling quota wall — sleeping 18 min on a single
+                    # call would burn the job timeout. Signal upstream to stop.
+                    log(f"  429 with retry-after {wait:.0f}s ⇒ TPD/RPD wall; bailing so partial digest can ship")
+                    return {"score": 0, "verdict": "skipped: daily Groq quota wall", "chosen_resume": "", "_tpd_hit": True}
                 wait = max(wait, 2 ** (attempt + 1))
                 if attempt < MAX_ATTEMPTS - 1:
                     log(f"  429 — sleeping {wait:.1f}s (attempt {attempt + 1}/{MAX_ATTEMPTS})")
@@ -262,16 +273,25 @@ def main() -> int:
     today_iso = date.today().isoformat()
     scored: list[dict] = []
     log(f"scoring {len(to_score)} jobs against Groq ({MODEL}); pacing {pace}s between calls")
+    bailed_early = False
     for i, j in enumerate(to_score, start=1):
         result = score_one(j, resumes, api_key, session)
+        if result.get("_tpd_hit"):
+            # Groq daily quota wall. Don't mark this job as seen (so it gets
+            # re-scored tomorrow), don't include it in the digest, and stop
+            # iterating — every subsequent call would also 429.
+            log(f"  ⛔ bailing at job {i}/{len(to_score)} with {len(scored)} jobs already scored; "
+                f"{len(to_score) - i + 1} will roll over to tomorrow")
+            bailed_early = True
+            break
         j_out = {k: v for k, v in j.items() if k not in {"_pre_score"}}
         j_out["score"] = result["score"]
         j_out["verdict"] = result["verdict"]
         j_out["chosen_resume"] = result["chosen_resume"]
         scored.append(j_out)
-        # Mark as seen ONLY now that we've made a real scoring attempt
-        # (a 0/10 from a 429 still counts — we don't want to retry it tomorrow
-        # if Groq was the problem; the user can manually re-run if needed).
+        # Mark as seen ONLY after a successful scoring attempt. Jobs that got
+        # the _tpd_hit sentinel above stay unseen so tomorrow's run picks them
+        # up automatically.
         seen[j["id"]] = today_iso
         resume_short = _label(result["chosen_resume"]) if result["chosen_resume"] else "—"
         log(f"  [{i:2d}/{len(to_score)}] {j['company']:14s} {j['title'][:42]:42s} → {result['score']}/10  [{resume_short}]")
@@ -286,8 +306,10 @@ def main() -> int:
                 "seen": seen,
                 "board_summary": scrape.get("board_summary", []),
                 "candidates_considered": len(jobs),
-                "candidates_scored": len(to_score),
-                "candidates_dropped": len(dropped),
+                "candidates_scored": len(scored),
+                "candidates_pre_ranked": len(to_score),
+                "candidates_dropped_by_pre_rank": len(dropped),
+                "bailed_early_on_tpd": bailed_early,
             },
             ensure_ascii=False,
             indent=2,
