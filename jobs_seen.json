@@ -1,33 +1,126 @@
 {
-  "ab:snowflake:82dd2965-3860-4c43-aced-64c7515fda9f": "2026-05-21",
-  "gh:duolingo:8405083002": "2026-05-21",
-  "gh:glance:7585549": "2026-05-21",
-  "gh:hala:4960149008": "2026-05-21",
-  "gh:hala:4975560008": "2026-05-21",
-  "gh:hala:5060093008": "2026-05-21",
-  "gh:inmobi:7337428": "2026-05-21",
-  "gh:inmobi:7715011": "2026-05-21",
-  "gh:inmobi:7814028": "2026-05-21",
-  "gh:inmobi:7840513": "2026-05-21",
-  "gh:inmobi:7912490": "2026-05-21",
-  "gh:phonepe:7662554003": "2026-05-21",
-  "gh:phonepe:7690461003": "2026-05-21",
-  "gh:scaleai:4589749005": "2026-05-21",
-  "gh:scaleai:4650514005": "2026-05-21",
-  "gh:stripe:7819059": "2026-05-21",
-  "gh:tamara:4787871101": "2026-05-21",
-  "gh:tamara:4836942101": "2026-05-21",
-  "gh:tamara:4852757101": "2026-05-21",
-  "gh:tamara:4857127101": "2026-05-21",
-  "lv:fampay:10e190e6-a558-45d5-a83e-a2c10bb1a208": "2026-05-21",
-  "lv:fampay:bc1060ed-d15a-4f62-a560-856cc344201e": "2026-05-21",
-  "lv:fampay:fe282b22-d821-4f8b-94ac-12363ec802b2": "2026-05-21",
-  "lv:paytm:650d048f-1e1b-429b-96e0-e673c511cf9d": "2026-05-21",
-  "lv:paytm:75992181-c0d0-44e7-805a-6dddfd0fe23b": "2026-05-21",
-  "lv:paytm:b0d911e9-9f18-440e-b4a6-763693e4293a": "2026-05-21",
-  "lv:paytm:b909105c-269c-4726-b0af-f07ff2b2dd36": "2026-05-21",
-  "lv:paytm:bcd1320b-72a8-47e1-a062-15241381fdb3": "2026-05-21",
-  "lv:paytm:c6c6883e-fe18-46d8-9c39-2decda7fd4e2": "2026-05-21",
-  "lv:paytm:d73b511b-ae92-46f0-9aa1-ac10f2fbb84a": "2026-05-21",
-  "lv:paytm:ea9ecdbe-b68e-4238-9e51-4f36e711344b": "2026-05-21"
+  "ab:snowflake:82dd2965-3860-4c43-aced-64c7515fda9f": {
+    "date": "2026-05-21",
+    "fp": "snowflake|staff enterprise product manager, order management"
+  },
+  "gh:duolingo:8405083002": {
+    "date": "2026-05-21",
+    "fp": "duolingo|group product manager"
+  },
+  "gh:glance:7585549": {
+    "date": "2026-05-21",
+    "fp": "glance|senior product manager tv platform & partner integrations"
+  },
+  "gh:hala:4960149008": {
+    "date": "2026-05-21",
+    "fp": "hala|senior product manager"
+  },
+  "gh:hala:4975560008": {
+    "date": "2026-05-21",
+    "fp": "hala|senior product manager"
+  },
+  "gh:hala:5060093008": {
+    "date": "2026-05-21",
+    "fp": "hala|payment product manager"
+  },
+  "gh:inmobi:7337428": {
+    "date": "2026-05-21",
+    "fp": "inmobi|senior product manager central data repository & data platform ai"
+  },
+  "gh:inmobi:7715011": {
+    "date": "2026-05-21",
+    "fp": "inmobi|senior product manager ml decision systems (demand side platform)"
+  },
+  "gh:inmobi:7814028": {
+    "date": "2026-05-21",
+    "fp": "inmobi|senior product manager sparks"
+  },
+  "gh:inmobi:7840513": {
+    "date": "2026-05-21",
+    "fp": "inmobi|senior product manager \u2014 user store & ai intelligence platform"
+  },
+  "gh:inmobi:7912490": {
+    "date": "2026-05-21",
+    "fp": "inmobi|product manager ml decision systems (demand side platform)"
+  },
+  "gh:phonepe:7662554003": {
+    "date": "2026-05-21",
+    "fp": "phonepe|senior product manager"
+  },
+  "gh:phonepe:7690461003": {
+    "date": "2026-05-21",
+    "fp": "phonepe|product manager"
+  },
+  "gh:scaleai:4589749005": {
+    "date": "2026-05-21",
+    "fp": "scale ai|product manager of ai applications, global public sector"
+  },
+  "gh:scaleai:4650514005": {
+    "date": "2026-05-21",
+    "fp": "scale ai|product manager of ai applications, global public sector"
+  },
+  "gh:stripe:7819059": {
+    "date": "2026-05-21",
+    "fp": "stripe|staff product manager, payments"
+  },
+  "gh:tamara:4787871101": {
+    "date": "2026-05-21",
+    "fp": "tamara|product manager ii trust & safety"
+  },
+  "gh:tamara:4836942101": {
+    "date": "2026-05-21",
+    "fp": "tamara|senior product manager care tech"
+  },
+  "gh:tamara:4852757101": {
+    "date": "2026-05-21",
+    "fp": "tamara|senior product manager banking product"
+  },
+  "gh:tamara:4857127101": {
+    "date": "2026-05-21",
+    "fp": "tamara|senior product manager care tech"
+  },
+  "lv:fampay:10e190e6-a558-45d5-a83e-a2c10bb1a208": {
+    "date": "2026-05-21",
+    "fp": "fampay|product manager"
+  },
+  "lv:fampay:bc1060ed-d15a-4f62-a560-856cc344201e": {
+    "date": "2026-05-21",
+    "fp": "fampay|senior product manager"
+  },
+  "lv:fampay:fe282b22-d821-4f8b-94ac-12363ec802b2": {
+    "date": "2026-05-21",
+    "fp": "fampay|principal product manager"
+  },
+  "lv:paytm:650d048f-1e1b-429b-96e0-e673c511cf9d": {
+    "date": "2026-05-21",
+    "fp": "paytm|product management product manager ai devices"
+  },
+  "lv:paytm:75992181-c0d0-44e7-805a-6dddfd0fe23b": {
+    "date": "2026-05-21",
+    "fp": "paytm|product management senior product manager lending platform"
+  },
+  "lv:paytm:b0d911e9-9f18-440e-b4a6-763693e4293a": {
+    "date": "2026-05-21",
+    "fp": "paytm|product manager telco"
+  },
+  "lv:paytm:b909105c-269c-4726-b0af-f07ff2b2dd36": {
+    "date": "2026-05-21",
+    "fp": "paytm|product management senior product manager agent & merchant"
+  },
+  "lv:paytm:bcd1320b-72a8-47e1-a062-15241381fdb3": {
+    "date": "2026-05-21",
+    "fp": "paytm|product management product manager lending platform"
+  },
+  "lv:paytm:c6c6883e-fe18-46d8-9c39-2decda7fd4e2": {
+    "date": "2026-05-21",
+    "fp": "paytm|product management senior product manager payments"
+  },
+  "lv:paytm:d73b511b-ae92-46f0-9aa1-ac10f2fbb84a": {
+    "date": "2026-05-21",
+    "fp": "paytm|product management product manager paytm money"
+  },
+  "lv:paytm:ea9ecdbe-b68e-4238-9e51-4f36e711344b": {
+    "date": "2026-05-21",
+    "fp": "paytm|product management senior product manager lending platform"
+  }
 }

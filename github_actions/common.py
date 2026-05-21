@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import re
 import sys
 from pathlib import Path
 
@@ -43,18 +44,44 @@ def load_resumes() -> dict[str, str]:
     return {p.name: load_text(p) for p in RESUMES_DIR.glob("*.txt")}
 
 
-def load_seen() -> dict[str, str]:
+def load_seen() -> dict[str, dict]:
+    """jobs_seen.json schema:
+       Modern: { "<job_id>": {"date": "YYYY-MM-DD", "fp": "<fingerprint>"} }
+       Legacy: { "<job_id>": "YYYY-MM-DD" }   ← migrated transparently on load
+    """
     if not SEEN_PATH.exists():
         return {}
     try:
-        return load_json(SEEN_PATH)
+        raw = load_json(SEEN_PATH)
     except json.JSONDecodeError:
         log(f"warning: {SEEN_PATH} not valid JSON — starting fresh")
         return {}
+    out: dict[str, dict] = {}
+    for k, v in raw.items():
+        if isinstance(v, str):           # legacy: just a date string
+            out[k] = {"date": v, "fp": ""}
+        elif isinstance(v, dict):
+            out[k] = {"date": v.get("date", ""), "fp": v.get("fp", "")}
+        else:
+            out[k] = {"date": "", "fp": ""}
+    return out
 
 
-def save_seen(seen: dict[str, str]) -> None:
+def save_seen(seen: dict[str, dict]) -> None:
     SEEN_PATH.write_text(json.dumps(seen, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+# Collapses runs of whitespace, hyphens, underscores, slashes into a single
+# space so that "Senior PM - Lending" and "Senior PM- Lending" produce the
+# same fingerprint. Keeps alphanumerics intact so distinct titles
+# ("Senior PM - Payments" vs "Senior PM - Lending") stay distinct.
+_FP_NORM_RE = re.compile(r"[\s\-_/]+")
+
+
+def fingerprint(company: str, title: str) -> str:
+    c = _FP_NORM_RE.sub(" ", (company or "").lower()).strip()
+    t = _FP_NORM_RE.sub(" ", (title or "").lower()).strip()
+    return f"{c}|{t}"
 
 
 def env_required(name: str) -> str:

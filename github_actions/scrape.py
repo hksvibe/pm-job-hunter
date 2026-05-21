@@ -11,6 +11,7 @@ from datetime import date
 import requests
 
 from common import (
+    fingerprint,
     load_filters,
     load_resumes,
     load_seen,
@@ -173,8 +174,25 @@ def main() -> int:
         j for j in all_jobs
         if passes_title(j["title"]) and passes_location(j["location"], j["jd"])
     ]
-    after_dedup = [j for j in after_filter if j["id"] not in seen]
-    log(f"raw={len(all_jobs)}  after_filter={len(after_filter)}  after_dedup={len(after_dedup)}")
+
+    # Two-level dedup: skip if the exact job ID was seen OR if the same
+    # (company, title) fingerprint was already delivered under a different ID
+    # (catches reposts under fresh ATS URLs).
+    seen_ids = set(seen.keys())
+    seen_fps = {v.get("fp") for v in seen.values() if v.get("fp")}
+    after_dedup = []
+    dedup_by_id = 0
+    dedup_by_fp = 0
+    for j in after_filter:
+        if j["id"] in seen_ids:
+            dedup_by_id += 1
+            continue
+        if fingerprint(j["company"], j["title"]) in seen_fps:
+            dedup_by_fp += 1
+            continue
+        after_dedup.append(j)
+    log(f"raw={len(all_jobs)}  after_filter={len(after_filter)}  "
+        f"after_dedup={len(after_dedup)}  (dropped {dedup_by_id} by id, {dedup_by_fp} by fingerprint)")
 
     # Loud failure if filter killed everything — likely a broken source list.
     # Silent no-op if dedup killed everything — normal "no new jobs" day.

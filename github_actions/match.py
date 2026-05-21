@@ -16,7 +16,7 @@ from datetime import date
 
 import requests
 
-from common import env_required, load_filters, log, read_artifact, write_artifact
+from common import env_required, fingerprint, load_filters, log, read_artifact, write_artifact
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 PRIMARY_MODEL = "llama-3.3-70b-versatile"  # higher quality, ~6K input TPM, ~100K TPD
@@ -316,8 +316,13 @@ def main() -> int:
         scored.append(j_out)
         # Mark as seen ONLY after a successful scoring attempt. Jobs that got
         # the _tpd_hit sentinel above stay unseen so tomorrow's run picks them
-        # up automatically.
-        seen[j["id"]] = today_iso
+        # up automatically. We record the fingerprint too so a future repost
+        # under a fresh ATS URL (different ID, same company+title) is caught
+        # by scrape.py's two-level dedup.
+        seen[j["id"]] = {
+            "date": today_iso,
+            "fp": fingerprint(j["company"], j["title"]),
+        }
         resume_short = _label(result["chosen_resume"]) if result["chosen_resume"] else "—"
         model_tag = "8B" if result.get("model_used") == FALLBACK_MODEL else "70B"
         log(f"  [{i:2d}/{len(to_score)}] {j['company']:14s} {j['title'][:42]:42s} → {result['score']}/10  [{resume_short}, {model_tag}]")
