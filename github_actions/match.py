@@ -19,7 +19,8 @@ import requests
 from common import env_required, load_filters, log, read_artifact, write_artifact
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-MODEL = "llama-3.3-70b-versatile"
+PRIMARY_MODEL = "llama-3.3-70b-versatile"  # higher quality, ~6K input TPM, ~100K TPD
+FALLBACK_MODEL = "llama-3.1-8b-instant"     # separate quota bucket, ~30K TPM, ~500K TPD
 
 
 # === PRE-RANKER ==============================================================
@@ -137,15 +138,24 @@ def build_prompt(job: dict, resumes: dict[str, str]) -> tuple[str, str]:
 
 
 TPD_BAIL_THRESHOLD_SECONDS = 60  # if Groq's retry-after exceeds this we're in
-                                  # TPD/RPD-limit territory, not TPM-burst; bail
-                                  # so we can persist what's scored so far instead
-                                  # of timing out waiting 18 min on a single call.
+                                  # TPD/RPD-limit territory, not TPM-burst; on
+                                  # the primary model we try the fallback model;
+                                  # on the fallback we give up and persist what
+                                  # was scored so far.
 
 
-def score_one(job: dict, resumes: dict[str, str], api_key: str, session: requests.Session) -> dict:
+def _call_model(
+    model: str,
+    job: dict,
+    resumes: dict[str, str],
+    api_key: str,
+    session: requests.Session,
+) -> dict:
+    """Score one job against `model`. Returns a result dict; sets _tpd_hit=True
+    when the model's daily quota wall is reached."""
     system, user = build_prompt(job, resumes)
     body = {
-        "model": MODEL,
+        "model": model,
         "messages": [
             {"role": "system", "content": system},
             {"role": "user", "content": user},
@@ -163,31 +173,45 @@ def score_one(job: dict, resumes: dict[str, str], api_key: str, session: request
             if r.status_code == 429:
                 wait = float(r.headers.get("retry-after", "5"))
                 if wait > TPD_BAIL_THRESHOLD_SECONDS:
-                    # Daily/rolling quota wall — sleeping 18 min on a single
-                    # call would burn the job timeout. Signal upstream to stop.
-                    log(f"  429 with retry-after {wait:.0f}s ⇒ TPD/RPD wall; bailing so partial digest can ship")
-                    return {"score": 0, "verdict": "skipped: daily Groq quota wall", "chosen_resume": "", "_tpd_hit": True}
+                    log(f"  429 on {model} with retry-after {wait:.0f}s ⇒ TPD/RPD wall")
+                    return {"score": 0, "verdict": f"skipped: {model} TPD/RPD wall", "chosen_resume": "", "_tpd_hit": True}
                 wait = max(wait, 2 ** (attempt + 1))
                 if attempt < MAX_ATTEMPTS - 1:
-                    log(f"  429 — sleeping {wait:.1f}s (attempt {attempt + 1}/{MAX_ATTEMPTS})")
+                    log(f"  429 on {model} — sleeping {wait:.1f}s (attempt {attempt + 1}/{MAX_ATTEMPTS})")
                     time.sleep(wait)
                     continue
             r.raise_for_status()
             data = r.json()
             text = data["choices"][0]["message"]["content"]
-            return parse_score(text, resumes)
+            parsed = parse_score(text, resumes)
+            parsed["model_used"] = model
+            return parsed
         except requests.HTTPError as e:
             if attempt < MAX_ATTEMPTS - 1:
                 backoff = 2 ** (attempt + 1)
-                log(f"  HTTP error, retrying in {backoff}s: {e}")
+                log(f"  {model} HTTP error, retrying in {backoff}s: {e}")
                 time.sleep(backoff)
                 continue
-            log(f"  scoring failed {job['id']}: {e}")
-            return {"score": 0, "verdict": f"score error: {e}", "chosen_resume": ""}
+            log(f"  {model} scoring failed {job['id']}: {e}")
+            return {"score": 0, "verdict": f"score error: {e}", "chosen_resume": "", "model_used": model}
         except Exception as e:
-            log(f"  scoring failed {job['id']}: {e}")
-            return {"score": 0, "verdict": f"score error: {e}", "chosen_resume": ""}
-    return {"score": 0, "verdict": "score error: retries exhausted", "chosen_resume": ""}
+            log(f"  {model} scoring failed {job['id']}: {e}")
+            return {"score": 0, "verdict": f"score error: {e}", "chosen_resume": "", "model_used": model}
+    return {"score": 0, "verdict": "score error: retries exhausted", "chosen_resume": "", "model_used": model}
+
+
+def score_one(job: dict, resumes: dict[str, str], api_key: str, session: requests.Session) -> dict:
+    """Try the primary 70B model; on a TPD wall, fall back to the 8B model
+    (which has its own quota bucket). Only when *both* hit TPD do we surface
+    the _tpd_hit flag to the main loop."""
+    result = _call_model(PRIMARY_MODEL, job, resumes, api_key, session)
+    if not result.get("_tpd_hit"):
+        return result
+
+    log(f"  ↪ falling back to {FALLBACK_MODEL}")
+    result = _call_model(FALLBACK_MODEL, job, resumes, api_key, session)
+    # If both walls are up, surface the bail signal — match.main() stops iterating.
+    return result
 
 
 def parse_score(s: str, resumes: dict[str, str]) -> dict:
@@ -272,7 +296,7 @@ def main() -> int:
     session = requests.Session()
     today_iso = date.today().isoformat()
     scored: list[dict] = []
-    log(f"scoring {len(to_score)} jobs against Groq ({MODEL}); pacing {pace}s between calls")
+    log(f"scoring {len(to_score)} jobs; primary={PRIMARY_MODEL}, fallback={FALLBACK_MODEL}; pacing {pace}s between calls")
     bailed_early = False
     for i, j in enumerate(to_score, start=1):
         result = score_one(j, resumes, api_key, session)
@@ -288,13 +312,15 @@ def main() -> int:
         j_out["score"] = result["score"]
         j_out["verdict"] = result["verdict"]
         j_out["chosen_resume"] = result["chosen_resume"]
+        j_out["model_used"] = result.get("model_used", PRIMARY_MODEL)
         scored.append(j_out)
         # Mark as seen ONLY after a successful scoring attempt. Jobs that got
         # the _tpd_hit sentinel above stay unseen so tomorrow's run picks them
         # up automatically.
         seen[j["id"]] = today_iso
         resume_short = _label(result["chosen_resume"]) if result["chosen_resume"] else "—"
-        log(f"  [{i:2d}/{len(to_score)}] {j['company']:14s} {j['title'][:42]:42s} → {result['score']}/10  [{resume_short}]")
+        model_tag = "8B" if result.get("model_used") == FALLBACK_MODEL else "70B"
+        log(f"  [{i:2d}/{len(to_score)}] {j['company']:14s} {j['title'][:42]:42s} → {result['score']}/10  [{resume_short}, {model_tag}]")
         if i < len(to_score):
             time.sleep(pace)
 

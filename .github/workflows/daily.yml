@@ -2,8 +2,12 @@ name: Daily PM Job Digest
 
 on:
   schedule:
-    # 02:30 UTC = 08:00 IST
-    - cron: '30 2 * * *'
+    # Primary slot:   02:17 UTC = 07:47 IST  (off the heavy top-of-hour boundary)
+    # Safety-net:     04:17 UTC = 09:47 IST  (catches the day if GitHub skipped/delayed the primary)
+    # The dedup state in jobs_seen.json ensures the second run only ships jobs
+    # the first run didn't — no duplicate Telegram pings.
+    - cron: '17 2 * * *'
+    - cron: '17 4 * * *'
   workflow_dispatch:
     # lets us run the workflow on-demand from the GitHub UI
 
