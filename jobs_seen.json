@@ -1,7 +1,55 @@
 {
+  "ab:openai:73e59b84-2e87-4637-8c4a-d271784afb30": {
+    "date": "2026-05-21",
+    "fp": "openai|gtm growth product manager, agentic systems"
+  },
+  "ab:plaid:0661cdab-9bc9-4614-8d2f-8f38ba4f0ec3": {
+    "date": "2026-05-21",
+    "fp": "plaid|product lead growth"
+  },
+  "ab:plaid:0fa4649a-dae2-4c13-ae70-8e93ce221152": {
+    "date": "2026-05-21",
+    "fp": "plaid|product lead account verification"
+  },
+  "ab:plaid:8b81429d-f0e8-4b84-9f71-d25405e63d71": {
+    "date": "2026-05-21",
+    "fp": "plaid|staff product manager ai foundations"
+  },
+  "ab:plaid:94ecbba3-660c-4604-a4f5-071f5c2c74d8": {
+    "date": "2026-05-21",
+    "fp": "plaid|senior product manager"
+  },
+  "ab:rain:149dccf1-fdbf-4a14-8f2c-7551fe8ba43e": {
+    "date": "2026-05-21",
+    "fp": "rain|senior product manager"
+  },
+  "ab:rain:95ae1a01-a3a7-4059-847d-e842fa7e13cb": {
+    "date": "2026-05-21",
+    "fp": "rain|product manager, cards"
+  },
+  "ab:snowflake:02aa1900-b08d-44e4-8724-9eba8b090fb1": {
+    "date": "2026-05-21",
+    "fp": "snowflake|senior product manager developer platform"
+  },
+  "ab:snowflake:2860302b-444c-49f4-b764-ff462efbfcc0": {
+    "date": "2026-05-21",
+    "fp": "snowflake|staff product manager, unistore (hybrid tables)"
+  },
+  "ab:snowflake:4a8607f9-5e63-427d-91de-183f43012c69": {
+    "date": "2026-05-21",
+    "fp": "snowflake|staff product manager developer experience and test pyramid"
+  },
+  "ab:snowflake:535ce4ac-9e1f-4068-97c3-eb43a92bfebf": {
+    "date": "2026-05-21",
+    "fp": "snowflake|senior product manager enterprise platform orchestration"
+  },
   "ab:snowflake:82dd2965-3860-4c43-aced-64c7515fda9f": {
     "date": "2026-05-21",
     "fp": "snowflake|staff enterprise product manager, order management"
+  },
+  "gh:discord:8530692002": {
+    "date": "2026-05-21",
+    "fp": "discord|senior product manager, ad formats"
   },
   "gh:duolingo:8405083002": {
     "date": "2026-05-21",
@@ -10,6 +58,10 @@
   "gh:glance:7585549": {
     "date": "2026-05-21",
     "fp": "glance|senior product manager tv platform & partner integrations"
+  },
+  "gh:glance:7845760": {
+    "date": "2026-05-21",
+    "fp": "glance|product manager tv shopping"
   },
   "gh:hala:4960149008": {
     "date": "2026-05-21",
@@ -43,6 +95,30 @@
     "date": "2026-05-21",
     "fp": "inmobi|product manager ml decision systems (demand side platform)"
   },
+  "gh:instacart:7597064": {
+    "date": "2026-05-21",
+    "fp": "instacart|principal product manager, agentic commerce"
+  },
+  "gh:instacart:7597066": {
+    "date": "2026-05-21",
+    "fp": "instacart|principal product manager, agentic commerce"
+  },
+  "gh:instacart:7769924": {
+    "date": "2026-05-21",
+    "fp": "instacart|senior product manager, fraud & trust"
+  },
+  "gh:instacart:7769926": {
+    "date": "2026-05-21",
+    "fp": "instacart|senior product manager, fraud & trust"
+  },
+  "gh:instacart:7904851": {
+    "date": "2026-05-21",
+    "fp": "instacart|senior product manager, shopping experience"
+  },
+  "gh:instacart:7904853": {
+    "date": "2026-05-21",
+    "fp": "instacart|senior product manager, shopping experience"
+  },
   "gh:phonepe:7662554003": {
     "date": "2026-05-21",
     "fp": "phonepe|senior product manager"
@@ -59,9 +135,45 @@
     "date": "2026-05-21",
     "fp": "scale ai|product manager of ai applications, global public sector"
   },
+  "gh:stripe:7176530": {
+    "date": "2026-05-21",
+    "fp": "stripe|product manager, payments"
+  },
+  "gh:stripe:7625842": {
+    "date": "2026-05-21",
+    "fp": "stripe|product manager, risk & compliance"
+  },
+  "gh:stripe:7655023": {
+    "date": "2026-05-21",
+    "fp": "stripe|product lead, ai"
+  },
+  "gh:stripe:7768979": {
+    "date": "2026-05-21",
+    "fp": "stripe|product manager, emea payments lead"
+  },
+  "gh:stripe:7809139": {
+    "date": "2026-05-21",
+    "fp": "stripe|product manager, growth ai outreach motion"
+  },
+  "gh:stripe:7812856": {
+    "date": "2026-05-21",
+    "fp": "stripe|staff product manager, enterprise (industries)"
+  },
   "gh:stripe:7819059": {
     "date": "2026-05-21",
     "fp": "stripe|staff product manager, payments"
+  },
+  "gh:stripe:7869917": {
+    "date": "2026-05-21",
+    "fp": "stripe|product lead, support experience"
+  },
+  "gh:stripe:7913702": {
+    "date": "2026-05-21",
+    "fp": "stripe|staff product manager, dashboard"
+  },
+  "gh:stripe:7920219": {
+    "date": "2026-05-21",
+    "fp": "stripe|staff product manager, support experience"
   },
   "gh:tamara:4787871101": {
     "date": "2026-05-21",
@@ -91,6 +203,10 @@
     "date": "2026-05-21",
     "fp": "fampay|principal product manager"
   },
+  "lv:meesho:3b6ea0f7-cde7-4034-a862-232a177a4c95": {
+    "date": "2026-05-21",
+    "fp": "meesho|product manager i"
+  },
   "lv:paytm:650d048f-1e1b-429b-96e0-e673c511cf9d": {
     "date": "2026-05-21",
     "fp": "paytm|product management product manager ai devices"
@@ -118,6 +234,10 @@
   "lv:paytm:d73b511b-ae92-46f0-9aa1-ac10f2fbb84a": {
     "date": "2026-05-21",
     "fp": "paytm|product management product manager paytm money"
+  },
+  "lv:paytm:dccfda94-a960-4cfc-85bd-f60c89e133b8": {
+    "date": "2026-05-21",
+    "fp": "paytm|product management product manager recharges & utilities"
   },
   "lv:paytm:ea9ecdbe-b68e-4238-9e51-4f36e711344b": {
     "date": "2026-05-21",
