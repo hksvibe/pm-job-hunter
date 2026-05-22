@@ -222,7 +222,15 @@ def main() -> int:
         log("warning: jobs found but none passed filter — check filters.json")
     if not after_dedup:
         log("no new jobs to score; exiting cleanly")
-        write_artifact("scrape_output.json", json.dumps({"jobs": [], "board_summary": board_summary, "seen": seen}))
+        # Resumes must be passed through even on no-op runs — match.py loads
+        # them and fails fatally if they're missing, even when there's
+        # nothing to score. (Older scrape.py wrote a slimmer artifact here.)
+        write_artifact(
+            "scrape_output.json",
+            json.dumps(
+                {"jobs": [], "resumes": resumes, "board_summary": board_summary, "seen": seen}
+            ),
+        )
         return 0
 
     for j in after_dedup:

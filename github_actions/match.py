@@ -265,10 +265,9 @@ def main() -> int:
     seen = scrape.get("seen") or {}
     filters = load_filters()
 
-    if not resumes:
-        log("FATAL: no résumés in scrape artifact — match.py cannot score without them")
-        return 2
-
+    # Check no-jobs first — a fresh "nothing new today" run is a normal,
+    # successful outcome. Only complain about missing résumés when we'd
+    # actually need them to score something.
     if not jobs:
         log("no jobs to score; passing through empty list")
         write_artifact(
@@ -276,6 +275,10 @@ def main() -> int:
             json.dumps({"scored": [], "seen": seen, "board_summary": scrape.get("board_summary", [])}),
         )
         return 0
+
+    if not resumes:
+        log("FATAL: jobs to score but no résumés in scrape artifact — check the resume-inject step")
+        return 2
 
     # === Pre-rank ===
     keywords = [k.lower() for k in filters.get("_pre_rank_keywords", [])]
