@@ -191,6 +191,10 @@
     "date": "2026-05-21",
     "fp": "tamara|senior product manager care tech"
   },
+  "lv:drivetrain:12f4d396-83dd-466b-89ca-eb7ce9fa4194": {
+    "date": "2026-05-23",
+    "fp": "drivetrain|product manager data platform"
+  },
   "lv:fampay:10e190e6-a558-45d5-a83e-a2c10bb1a208": {
     "date": "2026-05-21",
     "fp": "fampay|product manager"
@@ -246,5 +250,9 @@
   "lv:paytm:ea9ecdbe-b68e-4238-9e51-4f36e711344b": {
     "date": "2026-05-21",
     "fp": "paytm|product management senior product manager lending platform"
+  },
+  "sr:almosafer:743999791314690": {
+    "date": "2026-05-23",
+    "fp": "almosafer|product manager"
   }
 }
