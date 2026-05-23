@@ -52,7 +52,25 @@
     { "company": "Plaid",      "region": "Global", "board_type": "ashby",      "slug": "plaid",      "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/plaid" },
     { "company": "Perplexity", "region": "Global", "board_type": "ashby",      "slug": "perplexity", "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/perplexity" },
     { "company": "Supabase",   "region": "Global", "board_type": "ashby",      "slug": "supabase",   "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/supabase" },
-    { "company": "Linear",     "region": "Global", "board_type": "ashby",      "slug": "linear",     "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/linear" }
+    { "company": "Linear",     "region": "Global", "board_type": "ashby",      "slug": "linear",     "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/linear" },
+
+    { "company": "Epifi",         "region": "India",       "board_type": "lever",           "slug": "epifi",        "fetch_url": "https://api.lever.co/v0/postings/epifi?mode=json" },
+    { "company": "Thndr",         "region": "Middle East", "board_type": "ashby",           "slug": "thndr",        "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/thndr" },
+    { "company": "Freshworks",    "region": "India",       "board_type": "smartrecruiters", "slug": "freshworks",   "fetch_url": "https://api.smartrecruiters.com/v1/companies/freshworks/postings?limit=100" },
+    { "company": "Ixigo",         "region": "India",       "board_type": "smartrecruiters", "slug": "ixigo",        "fetch_url": "https://api.smartrecruiters.com/v1/companies/ixigo/postings?limit=100" },
+    { "company": "Naukri",        "region": "India",       "board_type": "greenhouse",      "slug": "naukri",       "fetch_url": "https://boards-api.greenhouse.io/v1/boards/naukri/jobs?content=true" },
+    { "company": "Unacademy",     "region": "India",       "board_type": "smartrecruiters", "slug": "unacademy",    "fetch_url": "https://api.smartrecruiters.com/v1/companies/unacademy/postings?limit=100" },
+    { "company": "Cars24",        "region": "India",       "board_type": "smartrecruiters", "slug": "cars24",       "fetch_url": "https://api.smartrecruiters.com/v1/companies/cars24/postings?limit=100" },
+    { "company": "Lendingkart",   "region": "India",       "board_type": "smartrecruiters", "slug": "lendingkart",  "fetch_url": "https://api.smartrecruiters.com/v1/companies/lendingkart/postings?limit=100" },
+    { "company": "Upstox",        "region": "India",       "board_type": "smartrecruiters", "slug": "upstox",       "fetch_url": "https://api.smartrecruiters.com/v1/companies/upstox/postings?limit=100" },
+
+    { "company": "Almosafer",     "region": "Middle East", "board_type": "smartrecruiters", "slug": "almosafer",    "fetch_url": "https://api.smartrecruiters.com/v1/companies/almosafer/postings?limit=100" },
+    { "company": "Namshi",        "region": "Middle East", "board_type": "smartrecruiters", "slug": "namshi",       "fetch_url": "https://api.smartrecruiters.com/v1/companies/namshi/postings?limit=100" },
+    { "company": "NoonAcademy",   "region": "Middle East", "board_type": "smartrecruiters", "slug": "noonacademy",  "fetch_url": "https://api.smartrecruiters.com/v1/companies/noonacademy/postings?limit=100" },
+
+    { "company": "LinkedIn",      "region": "Global",      "board_type": "greenhouse",      "slug": "linkedin",     "fetch_url": "https://boards-api.greenhouse.io/v1/boards/linkedin/jobs?content=true" },
+    { "company": "Uber",          "region": "Global",      "board_type": "smartrecruiters", "slug": "uber",         "fetch_url": "https://api.smartrecruiters.com/v1/companies/uber/postings?limit=100" },
+    { "company": "Drivetrain",    "region": "Global",      "board_type": "lever",           "slug": "drivetrain",   "fetch_url": "https://api.lever.co/v0/postings/drivetrain?mode=json" }
   ],
   "candidates_to_verify_periodically": [
     { "company": "Razorpay",     "hint": "uses workday or jobs.lever.co/razorpay/* — check careers.razorpay.com source HTML for the ATS" },

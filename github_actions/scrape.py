@@ -105,6 +105,34 @@ def normalize(resp: dict) -> list[dict]:
                 "jd": jd,
                 "region": src.get("region"),
             })
+    elif src["board_type"] == "smartrecruiters":
+        for j in (data.get("content") or []):
+            loc = j.get("location") or {}
+            loc_parts = [
+                loc.get("fullLocation"),
+                loc.get("city"),
+                loc.get("region"),
+                loc.get("country"),
+            ]
+            if loc.get("remote"):
+                loc_parts.append("remote")
+            if loc.get("hybrid"):
+                loc_parts.append("hybrid")
+            location = " | ".join(p for p in loc_parts if p)
+            # SmartRecruiters' /postings list endpoint does not include the JD
+            # text — that would require a second call per job to /postings/<id>.
+            # We leave JD empty; the LLM still scores well on (title, company,
+            # location) for PM roles. If quality suffers we can add a detail
+            # fetch for jobs that pass title+location filter.
+            out.append({
+                "id": f"sr:{src['slug']}:{j.get('id')}",
+                "title": j.get("name") or "",
+                "company": src["company"],
+                "location": location,
+                "url": f"https://jobs.smartrecruiters.com/{src['slug']}/{j.get('id')}",
+                "jd": "",
+                "region": src.get("region"),
+            })
     return out
 
 
@@ -179,6 +207,8 @@ def main() -> int:
                 raw = len(r["data"]) if isinstance(r["data"], list) else 0
             elif bt == "ashby":
                 raw = len(((r["data"] or {}).get("jobs")) or [])
+            elif bt == "smartrecruiters":
+                raw = len(((r["data"] or {}).get("content")) or [])
         board_summary.append({
             "company": r["src"]["company"],
             "ok": r.get("ok"),
