@@ -124,12 +124,35 @@
   "min_llm_score": 7,
   "max_jobs_to_score": 30,
   "llm_pace_seconds": 26,
+  "_pre_rank_keywords_comment": "Domain-diversified scoring keywords. AI/fintech remain because the résumés lean that way, but consumer/marketplace/SaaS/travel/mobility/edtech/healthtech/gaming/proptech are now all in scope. Pre-rank score = number of these tokens appearing in title + first 1200 chars of JD.",
   "_pre_rank_keywords": [
-    "fintech", "payments", "payment", "banking", "lending", "upi", "kyc",
-    "kyb", "bnpl", "merchant", "wallet", "card", "checkout",
+    "product", "roadmap", "platform", "strategy", "vision", "lifecycle",
+    "discovery", "0-1", "0 to 1", "go-to-market", "gtm", "growth",
+
     "ai", "ai/ml", "llm", "genai", "generative", "agent", "agentic",
-    "conversational", "rag", "nlp",
-    "platform", "api", "product", "roadmap", "fintech product",
-    "growth", "0-1", "0 to 1", "go-to-market", "gtm"
+    "conversational", "rag", "nlp", "data", "ml",
+
+    "fintech", "payments", "payment", "banking", "lending", "upi", "kyc",
+    "kyb", "bnpl", "merchant", "wallet", "card", "checkout", "bfsi", "neobank",
+
+    "consumer", "ecommerce", "e-commerce", "marketplace", "retail",
+    "shopping", "cart", "quick commerce", "q-commerce", "qcommerce",
+
+    "food", "delivery", "logistics", "supply chain", "fulfillment",
+    "last mile", "operations",
+
+    "mobility", "ride", "travel", "booking", "hospitality", "transport",
+
+    "saas", "b2b", "enterprise", "developer", "api product", "devtools",
+
+    "edtech", "learning", "education",
+    "healthcare", "healthtech", "patient",
+
+    "content", "media", "gaming", "social", "video", "ads",
+
+    "real estate", "proptech", "property",
+
+    "senior", "lead", "principal", "head", "director", "manager",
+    "vice president", "vp", "group product"
   ]
 }

@@ -70,7 +70,23 @@
 
     { "company": "LinkedIn",      "region": "Global",      "board_type": "greenhouse",      "slug": "linkedin",     "fetch_url": "https://boards-api.greenhouse.io/v1/boards/linkedin/jobs?content=true" },
     { "company": "Uber",          "region": "Global",      "board_type": "smartrecruiters", "slug": "uber",         "fetch_url": "https://api.smartrecruiters.com/v1/companies/uber/postings?limit=100" },
-    { "company": "Drivetrain",    "region": "Global",      "board_type": "lever",           "slug": "drivetrain",   "fetch_url": "https://api.lever.co/v0/postings/drivetrain?mode=json" }
+    { "company": "Drivetrain",    "region": "Global",      "board_type": "lever",           "slug": "drivetrain",   "fetch_url": "https://api.lever.co/v0/postings/drivetrain?mode=json" },
+
+    { "company": "HighRadius",    "region": "India",       "board_type": "greenhouse",      "slug": "highradius",   "fetch_url": "https://boards-api.greenhouse.io/v1/boards/highradius/jobs?content=true" },
+    { "company": "Sarvam AI",     "region": "India",       "board_type": "ashby",           "slug": "sarvam",       "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/sarvam" },
+    { "company": "Atlan",         "region": "India",       "board_type": "ashby",           "slug": "atlan",        "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/atlan" },
+    { "company": "MindTickle",    "region": "India",       "board_type": "lever",           "slug": "mindtickle",   "fetch_url": "https://api.lever.co/v0/postings/mindtickle?mode=json" },
+    { "company": "Newton School", "region": "India",       "board_type": "lever",           "slug": "newton",       "fetch_url": "https://api.lever.co/v0/postings/newton?mode=json" },
+    { "company": "AbhiBus",       "region": "India",       "board_type": "smartrecruiters", "slug": "abhibus",      "fetch_url": "https://api.smartrecruiters.com/v1/companies/abhibus/postings?limit=100" },
+    { "company": "InterviewBit",  "region": "India",       "board_type": "smartrecruiters", "slug": "interviewbit", "fetch_url": "https://api.smartrecruiters.com/v1/companies/interviewbit/postings?limit=100" },
+    { "company": "NoBroker",      "region": "India",       "board_type": "smartrecruiters", "slug": "nobroker",     "fetch_url": "https://api.smartrecruiters.com/v1/companies/nobroker/postings?limit=100" },
+
+    { "company": "Aldar Properties", "region": "Middle East", "board_type": "lever",        "slug": "aldar",        "fetch_url": "https://api.lever.co/v0/postings/aldar?mode=json" },
+    { "company": "Carriage",      "region": "Middle East", "board_type": "smartrecruiters", "slug": "carriage",     "fetch_url": "https://api.smartrecruiters.com/v1/companies/carriage/postings?limit=100" },
+
+    { "company": "Agoda",         "region": "Global",      "board_type": "greenhouse",      "slug": "agoda",        "fetch_url": "https://boards-api.greenhouse.io/v1/boards/agoda/jobs?content=true" },
+    { "company": "Tripadvisor",   "region": "Global",      "board_type": "greenhouse",      "slug": "tripadvisor",  "fetch_url": "https://boards-api.greenhouse.io/v1/boards/tripadvisor/jobs?content=true" },
+    { "company": "Deliveroo",     "region": "Global",      "board_type": "ashby",           "slug": "deliveroo",    "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/deliveroo" }
   ],
   "candidates_to_verify_periodically": [
     { "company": "Razorpay",     "hint": "uses workday or jobs.lever.co/razorpay/* — check careers.razorpay.com source HTML for the ATS" },
