@@ -27,6 +27,26 @@
     "date": "2026-05-21",
     "fp": "rain|product manager, cards"
   },
+  "ab:sarvam:6390e602-7b98-4700-baa9-ced5be8b1651": {
+    "date": "2026-05-26",
+    "fp": "sarvam ai|product manager, monetization & retention"
+  },
+  "ab:sarvam:929e2e12-7a2f-4e28-9d27-f220910b2125": {
+    "date": "2026-05-26",
+    "fp": "sarvam ai|product manager, growth"
+  },
+  "ab:sarvam:9e197c29-5164-42eb-8e74-4f691a794517": {
+    "date": "2026-05-26",
+    "fp": "sarvam ai|product manager (models)"
+  },
+  "ab:sarvam:c4bb3b2c-7608-4d57-8761-650b4222ac13": {
+    "date": "2026-05-26",
+    "fp": "sarvam ai|product manager"
+  },
+  "ab:sarvam:f462051e-ec76-45cf-96c5-e0192dd4dcc6": {
+    "date": "2026-05-26",
+    "fp": "sarvam ai|product manager on device & edge ai"
+  },
   "ab:snowflake:02aa1900-b08d-44e4-8724-9eba8b090fb1": {
     "date": "2026-05-21",
     "fp": "snowflake|senior product manager developer platform"
@@ -74,6 +94,22 @@
   "gh:hala:5060093008": {
     "date": "2026-05-21",
     "fp": "hala|payment product manager"
+  },
+  "gh:highradius:7589664003": {
+    "date": "2026-05-26",
+    "fp": "highradius|senior product manager"
+  },
+  "gh:highradius:7620165003": {
+    "date": "2026-05-26",
+    "fp": "highradius|product manager"
+  },
+  "gh:highradius:7707536003": {
+    "date": "2026-05-26",
+    "fp": "highradius|senior product manager"
+  },
+  "gh:highradius:7719385003": {
+    "date": "2026-05-26",
+    "fp": "highradius|senior product manager"
   },
   "gh:inmobi:7337428": {
     "date": "2026-05-21",
@@ -214,6 +250,18 @@
   "lv:meesho:58d87507-0cbb-4db7-a4eb-fd8f9ec353f4": {
     "date": "2026-05-22",
     "fp": "meesho|product manager i fulfillment"
+  },
+  "lv:mindtickle:37ce31ba-9a5b-4890-a06a-8d0edacee7cc": {
+    "date": "2026-05-26",
+    "fp": "mindtickle|technical product owner ii"
+  },
+  "lv:mindtickle:b96342a2-a4a5-4281-8ccf-324b28a2e962": {
+    "date": "2026-05-26",
+    "fp": "mindtickle|group product manager"
+  },
+  "lv:mindtickle:e55245fd-983c-4564-9b3f-491b7d16b8e8": {
+    "date": "2026-05-26",
+    "fp": "mindtickle|senior product manager"
   },
   "lv:paytm:650d048f-1e1b-429b-96e0-e673c511cf9d": {
     "date": "2026-05-21",
