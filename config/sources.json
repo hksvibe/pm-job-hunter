@@ -86,7 +86,23 @@
 
     { "company": "Agoda",         "region": "Global",      "board_type": "greenhouse",      "slug": "agoda",        "fetch_url": "https://boards-api.greenhouse.io/v1/boards/agoda/jobs?content=true" },
     { "company": "Tripadvisor",   "region": "Global",      "board_type": "greenhouse",      "slug": "tripadvisor",  "fetch_url": "https://boards-api.greenhouse.io/v1/boards/tripadvisor/jobs?content=true" },
-    { "company": "Deliveroo",     "region": "Global",      "board_type": "ashby",           "slug": "deliveroo",    "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/deliveroo" }
+    { "company": "Deliveroo",     "region": "Global",      "board_type": "ashby",           "slug": "deliveroo",    "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/deliveroo" },
+
+    { "company": "Observe.AI",    "region": "India",       "board_type": "greenhouse",      "slug": "observeai",    "fetch_url": "https://boards-api.greenhouse.io/v1/boards/observeai/jobs?content=true" },
+    { "company": "CaptainFresh",  "region": "India",       "board_type": "smartrecruiters", "slug": "captainfresh", "fetch_url": "https://api.smartrecruiters.com/v1/companies/captainfresh/postings?limit=100" },
+    { "company": "Amber Student", "region": "India",       "board_type": "smartrecruiters", "slug": "amberstudent", "fetch_url": "https://api.smartrecruiters.com/v1/companies/amberstudent/postings?limit=100" },
+    { "company": "Rebel Foods",   "region": "India",       "board_type": "smartrecruiters", "slug": "rebelfoods",   "fetch_url": "https://api.smartrecruiters.com/v1/companies/rebelfoods/postings?limit=100" },
+    { "company": "Decimal",       "region": "Global",      "board_type": "ashby",           "slug": "decimal",      "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/decimal" },
+
+    { "company": "ServiceNow",    "region": "Global",      "board_type": "smartrecruiters", "slug": "servicenow",   "fetch_url": "https://api.smartrecruiters.com/v1/companies/servicenow/postings?limit=100" },
+    { "company": "MongoDB",       "region": "Global",      "board_type": "greenhouse",      "slug": "mongodb",      "fetch_url": "https://boards-api.greenhouse.io/v1/boards/mongodb/jobs?content=true" },
+    { "company": "Datadog",       "region": "Global",      "board_type": "greenhouse",      "slug": "datadog",      "fetch_url": "https://boards-api.greenhouse.io/v1/boards/datadog/jobs?content=true" },
+    { "company": "Okta",          "region": "Global",      "board_type": "greenhouse",      "slug": "okta",         "fetch_url": "https://boards-api.greenhouse.io/v1/boards/okta/jobs?content=true" },
+    { "company": "Elastic",       "region": "Global",      "board_type": "greenhouse",      "slug": "elastic",      "fetch_url": "https://boards-api.greenhouse.io/v1/boards/elastic/jobs?content=true" },
+    { "company": "Twilio",        "region": "Global",      "board_type": "greenhouse",      "slug": "twilio",       "fetch_url": "https://boards-api.greenhouse.io/v1/boards/twilio/jobs?content=true" },
+    { "company": "Redis",         "region": "Global",      "board_type": "ashby",           "slug": "redis",        "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/redis" },
+    { "company": "New Relic",     "region": "Global",      "board_type": "greenhouse",      "slug": "newrelic",     "fetch_url": "https://boards-api.greenhouse.io/v1/boards/newrelic/jobs?content=true" },
+    { "company": "Confluent",     "region": "Global",      "board_type": "ashby",           "slug": "confluent",    "fetch_url": "https://api.ashbyhq.com/posting-api/job-board/confluent" }
   ],
   "candidates_to_verify_periodically": [
     { "company": "Razorpay",     "hint": "uses workday or jobs.lever.co/razorpay/* — check careers.razorpay.com source HTML for the ATS" },
