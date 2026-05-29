@@ -1,4 +1,8 @@
 {
+  "ab:confluent:c3fd5156-d339-4082-b6bd-2aba8b404188": {
+    "date": "2026-05-29",
+    "fp": "confluent|senior product manager \u2013 pricing & monetization"
+  },
   "ab:openai:73e59b84-2e87-4637-8c4a-d271784afb30": {
     "date": "2026-05-21",
     "fp": "openai|gtm growth product manager, agentic systems"
@@ -155,6 +159,34 @@
     "date": "2026-05-21",
     "fp": "instacart|senior product manager, shopping experience"
   },
+  "gh:mongodb:7851080": {
+    "date": "2026-05-29",
+    "fp": "mongodb|senior product manager"
+  },
+  "gh:mongodb:7922824": {
+    "date": "2026-05-29",
+    "fp": "mongodb|staff product manager"
+  },
+  "gh:newrelic:4944794008": {
+    "date": "2026-05-29",
+    "fp": "new relic|senior product manager r115"
+  },
+  "gh:newrelic:5171026008": {
+    "date": "2026-05-29",
+    "fp": "new relic|senior product manager"
+  },
+  "gh:newrelic:5211229008": {
+    "date": "2026-05-29",
+    "fp": "new relic|principal product manager"
+  },
+  "gh:newrelic:5211232008": {
+    "date": "2026-05-29",
+    "fp": "new relic|r0000564 principal product manager"
+  },
+  "gh:okta:7254769": {
+    "date": "2026-05-29",
+    "fp": "okta|sr. product manager, identity management"
+  },
   "gh:phonepe:7662554003": {
     "date": "2026-05-21",
     "fp": "phonepe|senior product manager"
@@ -302,5 +334,9 @@
   "sr:almosafer:743999791314690": {
     "date": "2026-05-23",
     "fp": "almosafer|product manager"
+  },
+  "sr:captainfresh:743999745255816": {
+    "date": "2026-05-29",
+    "fp": "captainfresh|product manager"
   }
 }
