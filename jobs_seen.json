@@ -123,6 +123,10 @@
     "date": "2026-06-08",
     "fp": "scale ai|product manager of ai applications, global public sector"
   },
+  "gh:stripe:7570242": {
+    "date": "2026-06-08",
+    "fp": "stripe|staff product manager, global expansion"
+  },
   "gh:stripe:7625842": {
     "date": "2026-06-08",
     "fp": "stripe|product manager, risk & compliance"
@@ -210,5 +214,9 @@
   "sr:captainfresh:743999745255816": {
     "date": "2026-05-29",
     "fp": "captainfresh|product manager"
+  },
+  "sr:freshworks:744000130753870": {
+    "date": "2026-06-08",
+    "fp": "freshworks|staff product manager"
   }
 }
