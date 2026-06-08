@@ -121,7 +121,7 @@
     "vietnam", "ho chi minh", "hanoi",
     "malaysia", "kuala lumpur"
   ],
-  "min_llm_score": 7,
+  "min_llm_score": 6,
   "max_jobs_to_score": 30,
   "llm_pace_seconds": 26,
   "_pre_rank_keywords_comment": "Domain-diversified scoring keywords. AI/fintech remain because the résumés lean that way, but consumer/marketplace/SaaS/travel/mobility/edtech/healthtech/gaming/proptech are now all in scope. Pre-rank score = number of these tokens appearing in title + first 1200 chars of JD.",
