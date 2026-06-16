@@ -23,6 +23,10 @@
     "date": "2026-05-26",
     "fp": "sarvam ai|product manager on device & edge ai"
   },
+  "ab:snowflake:5ee2c3b8-e528-47a2-b47d-62a5eda109c3": {
+    "date": "2026-06-16",
+    "fp": "snowflake|staff enterprise product manager, core finance"
+  },
   "ab:snowflake:82dd2965-3860-4c43-aced-64c7515fda9f": {
     "date": "2026-06-08",
     "fp": "snowflake|staff enterprise product manager, order management"
@@ -238,5 +242,9 @@
   "sr:freshworks:744000130753870": {
     "date": "2026-06-08",
     "fp": "freshworks|staff product manager"
+  },
+  "sr:servicenow:744000132339199": {
+    "date": "2026-06-16",
+    "fp": "servicenow|senior inbound product manager"
   }
 }
