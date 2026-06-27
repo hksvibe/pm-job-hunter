@@ -20,7 +20,11 @@ from common import env_required, fingerprint, load_filters, log, read_artifact, 
 
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
 PRIMARY_MODEL = "llama-3.3-70b-versatile"  # higher quality, ~6K input TPM, ~100K TPD
-FALLBACK_MODEL = "llama-3.1-8b-instant"     # separate quota bucket, ~30K TPM, ~500K TPD
+# Fallback used when the primary model hits its daily quota wall. Was
+# llama-3.1-8b-instant, which Groq deprecated 2026-06-15 (decommission
+# 2026-08-16). Migrated to Groq's recommended replacement, gpt-oss-20b,
+# which is a separate quota bucket and honours response_format=json_object.
+FALLBACK_MODEL = "openai/gpt-oss-20b"
 
 
 # === PRE-RANKER ==============================================================
@@ -163,6 +167,7 @@ def _call_model(
     """Score one job against `model`. Returns a result dict; sets _tpd_hit=True
     when the model's daily quota wall is reached."""
     system, user = build_prompt(job, resumes)
+    is_reasoning = model.startswith("openai/gpt-oss")
     body = {
         "model": model,
         "messages": [
@@ -170,9 +175,15 @@ def _call_model(
             {"role": "user", "content": user},
         ],
         "temperature": 0.2,
-        "max_tokens": 256,
+        # gpt-oss is a reasoning model: it spends tokens on a hidden reasoning
+        # pass before the answer, and those count against max_tokens. Give it
+        # extra headroom and dial reasoning down so the JSON answer never gets
+        # truncated. llama-3.3-70b doesn't reason, so 256 is plenty there.
+        "max_tokens": 1024 if is_reasoning else 256,
         "response_format": {"type": "json_object"},
     }
+    if is_reasoning:
+        body["reasoning_effort"] = "low"
     headers = {"Authorization": f"Bearer {api_key}", "Content-Type": "application/json"}
 
     MAX_ATTEMPTS = 4
@@ -210,9 +221,9 @@ def _call_model(
 
 
 def score_one(job: dict, resumes: dict[str, str], api_key: str, session: requests.Session) -> dict:
-    """Try the primary 70B model; on a TPD wall, fall back to the 8B model
-    (which has its own quota bucket). Only when *both* hit TPD do we surface
-    the _tpd_hit flag to the main loop."""
+    """Try the primary 70B model; on a TPD wall, fall back to the gpt-oss-20b
+    model (which has its own quota bucket). Only when *both* hit TPD do we
+    surface the _tpd_hit flag to the main loop."""
     result = _call_model(PRIMARY_MODEL, job, resumes, api_key, session)
     if not result.get("_tpd_hit"):
         return result
@@ -336,7 +347,7 @@ def main() -> int:
             "fp": fingerprint(j["company"], j["title"]),
         }
         resume_short = _label(result["chosen_resume"]) if result["chosen_resume"] else "—"
-        model_tag = "8B" if result.get("model_used") == FALLBACK_MODEL else "70B"
+        model_tag = "20B" if result.get("model_used") == FALLBACK_MODEL else "70B"
         log(f"  [{i:2d}/{len(to_score)}] {j['company']:14s} {j['title'][:42]:42s} → {result['score']}/10  [{resume_short}, {model_tag}]")
         if i < len(to_score):
             time.sleep(pace)
