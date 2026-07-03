@@ -213,6 +213,3 @@ Verdict: ₹0/month, sustainable indefinitely.
 
 ---
 
-## What's next (Orchestration B)
-
-Once the n8n version has been running cleanly for a few days, the same configs (`sources.json`, `filters.json`, `resume_routing.json`, `resumes/*.txt`) drop straight into a GitHub Actions cron repo with three small Python scripts: `scrape.py`, `match.py`, `notify.py`. That version runs in the cloud — no Mac needed — and doubles as a resume-portfolio piece. Ping when ready.
