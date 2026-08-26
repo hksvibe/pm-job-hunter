@@ -3,6 +3,10 @@
     "date": "2026-05-29",
     "fp": "confluent|senior product manager \u2013 pricing & monetization"
   },
+  "ab:sarvam:45986600-4da3-4e46-a204-2865392df169": {
+    "date": "2026-08-26",
+    "fp": "sarvam ai|product manager, model apis"
+  },
   "ab:sarvam:6390e602-7b98-4700-baa9-ced5be8b1651": {
     "date": "2026-05-26",
     "fp": "sarvam ai|product manager, monetization & retention"
@@ -327,6 +331,10 @@
     "date": "2026-08-11",
     "fp": "paytm|product management senior product manager paytm money (mutual funds)"
   },
+  "lv:paytm:8e70173d-43f1-4ca2-b41d-098f9ad36ee8": {
+    "date": "2026-08-26",
+    "fp": "paytm|ppsl product management senior product manager edc product"
+  },
   "lv:paytm:b0d911e9-9f18-440e-b4a6-763693e4293a": {
     "date": "2026-06-08",
     "fp": "paytm|product manager telco"
@@ -414,5 +422,9 @@
   "sr:servicenow:744000145412699": {
     "date": "2026-08-25",
     "fp": "servicenow|staff technical product manager \u2013 ai quality and evaluation"
+  },
+  "sr:servicenow:744000145459381": {
+    "date": "2026-08-26",
+    "fp": "servicenow|staff technical product manager \u2013 ai evaluation"
   }
 }
