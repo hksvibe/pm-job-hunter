@@ -335,6 +335,10 @@
     "date": "2026-08-26",
     "fp": "paytm|ppsl product management senior product manager edc product"
   },
+  "lv:paytm:9c74fdd9-36e1-4e42-839a-d52577bb3d70": {
+    "date": "2026-08-27",
+    "fp": "paytm|product management senior product manager pi agents (smb growth)"
+  },
   "lv:paytm:b0d911e9-9f18-440e-b4a6-763693e4293a": {
     "date": "2026-06-08",
     "fp": "paytm|product manager telco"
@@ -350,6 +354,10 @@
   "lv:paytm:bcd1320b-72a8-47e1-a062-15241381fdb3": {
     "date": "2026-06-08",
     "fp": "paytm|product management product manager lending platform"
+  },
+  "lv:paytm:be484058-3628-4b82-9342-6d1864c2d4a0": {
+    "date": "2026-08-27",
+    "fp": "paytm|product management product manager telco"
   },
   "lv:paytm:c173ccbe-d2ae-42f4-9cd5-72f69ff45a0f": {
     "date": "2026-08-15",
@@ -426,5 +434,9 @@
   "sr:servicenow:744000145459381": {
     "date": "2026-08-26",
     "fp": "servicenow|staff technical product manager \u2013 ai evaluation"
+  },
+  "sr:servicenow:744000145693831": {
+    "date": "2026-08-27",
+    "fp": "servicenow|staff technical product manager \u2013 ai llm expertise + ai evaluation science"
   }
 }
