@@ -319,6 +319,10 @@
     "date": "2026-06-23",
     "fp": "paytm|product management senior product manager (data product) ppsl"
   },
+  "lv:paytm:31b1200e-0efe-43fc-8f6f-08a2559b31ab": {
+    "date": "2026-09-03",
+    "fp": "paytm|product management senior product manager edc product"
+  },
   "lv:paytm:650d048f-1e1b-429b-96e0-e673c511cf9d": {
     "date": "2026-06-08",
     "fp": "paytm|product management product manager ai devices"
@@ -378,6 +382,10 @@
   "lv:paytm:ea9ecdbe-b68e-4238-9e51-4f36e711344b": {
     "date": "2026-06-08",
     "fp": "paytm|product management senior product manager lending platform"
+  },
+  "lv:paytm:f24d29df-a4ad-4991-ae78-1c5c24c63c75": {
+    "date": "2026-09-03",
+    "fp": "paytm|product management senior product manager lending"
   },
   "lv:paytm:fec8e98b-d09b-4edb-b5a9-fe04aa079a3c": {
     "date": "2026-07-29",
@@ -442,5 +450,9 @@
   "sr:servicenow:744000145693831": {
     "date": "2026-08-27",
     "fp": "servicenow|staff technical product manager \u2013 ai llm expertise + ai evaluation science"
+  },
+  "sr:servicenow:744000147142599": {
+    "date": "2026-09-03",
+    "fp": "servicenow|staff inbound product manager"
   }
 }
