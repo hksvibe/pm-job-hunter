@@ -179,6 +179,10 @@
     "date": "2026-06-24",
     "fp": "okta|senior product manager, data platform"
   },
+  "gh:okta:8188921": {
+    "date": "2026-09-10",
+    "fp": "okta|people technology staff product manager"
+  },
   "gh:phonepe:7662554003": {
     "date": "2026-06-08",
     "fp": "phonepe|senior product manager"
@@ -458,5 +462,9 @@
   "sr:servicenow:744000147142599": {
     "date": "2026-09-03",
     "fp": "servicenow|staff inbound product manager"
+  },
+  "sr:servicenow:744000148567160": {
+    "date": "2026-09-10",
+    "fp": "servicenow|staff inbound product manager, employee experience"
   }
 }
