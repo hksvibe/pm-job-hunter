@@ -478,5 +478,9 @@
   "sr:servicenow:744000148567160": {
     "date": "2026-09-10",
     "fp": "servicenow|staff inbound product manager, employee experience"
+  },
+  "sr:servicenow:744000150412162": {
+    "date": "2026-09-19",
+    "fp": "servicenow|sr staff inbound product manager"
   }
 }
