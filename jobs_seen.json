@@ -287,6 +287,10 @@
     "date": "2026-09-28",
     "fp": "meesho|senior product manager data & analytics platform"
   },
+  "lv:meesho:b56573f0-c701-422a-abfa-ac8bbdbfa645": {
+    "date": "2026-10-06",
+    "fp": "meesho|product manager ii"
+  },
   "lv:meesho:ba7f74f1-2448-43f1-bf1f-93949673abb4": {
     "date": "2026-07-03",
     "fp": "meesho|product manager l growth"
@@ -490,5 +494,9 @@
   "sr:servicenow:744000152588729": {
     "date": "2026-09-30",
     "fp": "servicenow|director, product design"
+  },
+  "sr:servicenow:744000153567049": {
+    "date": "2026-10-06",
+    "fp": "servicenow|sr inbound product manager"
   }
 }
