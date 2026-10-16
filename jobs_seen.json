@@ -510,5 +510,13 @@
   "sr:servicenow:744000153567049": {
     "date": "2026-10-06",
     "fp": "servicenow|sr inbound product manager"
+  },
+  "sr:servicenow:744000155792153": {
+    "date": "2026-10-16",
+    "fp": "servicenow|staff inbound product manager \u2013 platform and ai innovation solutions"
+  },
+  "sr:servicenow:744000155796579": {
+    "date": "2026-10-16",
+    "fp": "servicenow|staff inbound product manager ai evaluation tools"
   }
 }
