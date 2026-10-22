@@ -526,5 +526,9 @@
   "sr:servicenow:744000156043929": {
     "date": "2026-10-17",
     "fp": "servicenow|sr staff inbound product manager partner relationship management(prm)"
+  },
+  "sr:servicenow:744000156861272": {
+    "date": "2026-10-22",
+    "fp": "servicenow|staff ai product manager"
   }
 }
